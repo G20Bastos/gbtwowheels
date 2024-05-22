@@ -1,52 +1,42 @@
-# Prerequisites
-*.d
+# Arquivos temporários gerados pela compilação do .NET Core
+bin/
+obj/
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# Arquivos gerados pela documentação XML do .NET
+*.xml
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# Logs e arquivos de exceção
+*.log
+*.vscode/
+*.vs/
 
-# Precompiled Headers
-*.gch
-*.pch
+# Arquivos de cache do Visual Studio
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+# Pacotes do NuGet
+*.nupkg
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# Arquivos de dependências Node.js e NPM
+node_modules/
+npm-debug.log
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+# Pasta de cache do ReSharper
+_ReSharper*/
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# Pasta de cache do dotCover
+*.dotCover
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# Pasta de saída de testes
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
