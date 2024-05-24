@@ -1,0 +1,43 @@
+<div class="container">
+    <h2>Cadastre-se na plataforma</h2>
+    <form (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="firstName">Primeiro Nome</label>
+            <input type="text" id="firstName" class="form-control" [(ngModel)]="user.firstName" name="firstName" required maxlength="20">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Sobrenome</label>
+            <input type="text" id="lastName" class="form-control" [(ngModel)]="user.lastName" name="lastName" required maxlength="20">
+        </div>
+        <div class="form-group">
+            <label for="cnpj">CNPJ</label>
+            <input type="text" id="cnpj" class="form-control" [(ngModel)]="user.cnpj" name="cnpj" required mask="00.000.000/0000-00" maxlength="18">
+        </div>
+        <div class="form-group">
+            <label for="dateOfBirth">Data de Nascimento</label>
+            <input type="date" id="dateOfBirth" class="form-control" [(ngModel)]="user.dateOfBirth" name="dateOfBirth" required>
+        </div>
+        <div class="form-group">
+            <label for="categoryLicense">Categoria da Licença</label>
+            <input type="text" id="categoryLicense" class="form-control" [(ngModel)]="user.categoryLicense" name="categoryLicense" required maxlength="2">
+        </div>
+        <div class="form-group">
+            <label for="licenseNumber">Número da Licença</label>
+            <input type="number" id="licenseNumber" class="form-control" [(ngModel)]="user.licenseNumber" name="licenseNumber" required>
+        </div>
+        <div class="form-group">
+            <label for="imageLicense">Imagem da Licença</label>
+            <input type="file" id="imageLicense" class="form-control" (change)="onFileChange($event)" name="imageLicense" required>
+        </div>
+        <div class="form-group">
+            <label for="userEmail">Email</label>
+            <input type="email" id="userEmail" class="form-control" [(ngModel)]="user.userEmail" name="userEmail" required maxlength="100">
+        </div>
+        <div class="form-group">
+            <label for="userPassword">Senha</label>
+            <input type="password" id="userPassword" class="form-control" [(ngModel)]="user.userPassword" name="userPassword" required minlength="8" maxlength="20">
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+    </form>
+</div>
