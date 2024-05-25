@@ -1,6 +1,10 @@
 export interface Order {
-  id?: number;
+  orderId?: number;
+  userOrderCreationId: number;
+  userDeliveryId?: number;
   orderCreationDate: Date;
   addressOrder: string;
   orderServiceValue: number;
+  statusOrderId: number;
+  orderFinishDate?: Date;
 }

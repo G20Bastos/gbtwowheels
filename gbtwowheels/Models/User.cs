@@ -62,8 +62,10 @@ namespace gbtwowheels.Models
 
         public ICollection<Rent>? Rents { get; set; }
 
+        [InverseProperty("UserOrderCreation")]
         public ICollection<Order>? OrdersCreatedByUser { get; set; }
 
+        [InverseProperty("UserDelivery")]
         public ICollection<Order>? OrdersDeliveredByUser { get; set; }
 
         [NotMapped]

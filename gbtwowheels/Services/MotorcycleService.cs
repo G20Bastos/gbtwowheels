@@ -48,11 +48,11 @@ namespace gbtwowheels.Services
             catch (Exception ex)
             {
 
-                _logger.LogError(ex, "Error to add user in service");
+                _logger.LogError(ex, "Error to add moto in service");
 
 
                 response.Success = false;
-                response.Message = "Ocorreu um erro ao adicionar o usuário na plataforma.";
+                response.Message = "Ocorreu um erro ao adicionar a moto na plataforma.";
 
             }
 

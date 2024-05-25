@@ -49,6 +49,7 @@ namespace gbtwowheels.Services
                 {
                     //Encrypting password
                     user.UserPassword = BCrypt.Net.BCrypt.HashPassword(user.UserPassword);
+                    user.ImageLicense = user.ImageFile!.FileName;
                     var result = await _userRepository.AddUser(user);
                     response.Success = true;
                     response.Message = "Usuário cadastrado com sucesso!";

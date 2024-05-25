@@ -23,6 +23,8 @@ export class LoginComponent {
     this.http.post<any>('https://localhost:7296/api/user/login', user)
       .subscribe(response => {
         this.toastr.success('Usuário logado com sucesso!', 'Sucesso');
+        localStorage.setItem('authToken', response.data.tokenAccess);
+        localStorage.setItem('userId', response.data.userId); 
         this.router.navigate(['/main-admin']);
       }, error => {
         this.toastr.error('Erro ao fazer login', 'Erro');

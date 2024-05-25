@@ -48,6 +48,7 @@
     <None Remove="Utils\" />
     <None Remove="ClientApp\src\app\main\" />
     <None Remove="ClientApp\src\app\model\" />
+    <None Remove="ClientApp\src\app\services\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,6 +64,7 @@
     <Folder Include="Utils\" />
     <Folder Include="ClientApp\src\app\main\" />
     <Folder Include="ClientApp\src\app\model\" />
+    <Folder Include="ClientApp\src\app\services\" />
   </ItemGroup>
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

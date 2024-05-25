@@ -8,15 +8,15 @@ namespace gbtwowheels.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class MotorcycleController : ControllerBase
+    public class OrderController : ControllerBase
     {
-        private readonly IMotorcycleService _motorcycleService;
+        private readonly IOrderService _orderService;
 
-        private readonly ILogger<MotorcycleController> _logger;
+        private readonly ILogger<OrderController> _logger;
 
-        public MotorcycleController(IMotorcycleService motorcycleService, ILogger<MotorcycleController> logger)
+        public OrderController(IOrderService orderService, ILogger<OrderController> logger)
         {
-            _motorcycleService = motorcycleService;
+            _orderService = orderService;
             _logger = logger;
         }
 
@@ -40,9 +40,9 @@ namespace gbtwowheels.Controllers
 
 
 
-        // GET: api/Motorcycle
+        // GET: api/Order
         [HttpGet]
-        public ActionResult<IEnumerable<Motorcycle>> GetMotorcycles()
+        public ActionResult<IEnumerable<Order>> GetOrders()
         {
 
             if (!ValidateToken(out _))
@@ -50,12 +50,12 @@ namespace gbtwowheels.Controllers
                 return Unauthorized("Invalid token");
             }
 
-            return _motorcycleService.GetAllMotorcycles().ToList();
+            return _orderService.GetAllOrders().ToList();
         }
 
-        // GET: api/Motorcycle/1
+        // GET: api/Order/1
         [HttpGet("{id}")]
-        public ActionResult<Motorcycle> GetMotorcycle(int id)
+        public ActionResult<Order> GetOrder(int id)
         {
 
             if (!ValidateToken(out _))
@@ -63,19 +63,19 @@ namespace gbtwowheels.Controllers
                 return Unauthorized("Invalid token");
             }
 
-            var motorcycle = _motorcycleService.GetMotorcycleById(id);
+            var order = _orderService.GetOrderById(id);
 
-            if (motorcycle == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return motorcycle;
+            return order;
         }
 
-        //POST: api/motorcycle/addMotorcycle
+        //POST: api/order/addOrder
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddMotorcycle(Motorcycle motorcycle)
+        public async Task<IActionResult> AddOrder(Order order)
         {
 
             if (!ValidateToken(out _))
@@ -83,11 +83,11 @@ namespace gbtwowheels.Controllers
                 return Unauthorized("Invalid token");
             }
 
-            var response = new ServiceResponse<Motorcycle>();
+            var response = new ServiceResponse<Order>();
             try
             {
 
-                response = await _motorcycleService.Add(motorcycle);
+                response = await _orderService.Add(order);
 
                 if (!response.Success)
                 {
@@ -99,7 +99,7 @@ namespace gbtwowheels.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError(ex, "An error occurred while processing the AddMotorcycle request.");
+                _logger.LogError(ex, "An error occurred while processing the AddOrder request.");
                 return StatusCode(500, response.Message);
 
             }
@@ -107,9 +107,9 @@ namespace gbtwowheels.Controllers
         }
 
 
-        // PUT: api/Motorcycle/5
+        // PUT: api/Order/5
         [HttpPut("{id}")]
-        public IActionResult PutMotorcycle(int id, Motorcycle motorcycle)
+        public IActionResult PutOrder(int id, Order order)
         {
 
             if (!ValidateToken(out _))
@@ -118,19 +118,19 @@ namespace gbtwowheels.Controllers
             }
 
 
-            if (id != motorcycle.MotorcycleId)
+            if (id != order.OrderId)
             {
                 return BadRequest();
             }
 
-            _motorcycleService.UpdateMotorcycle(motorcycle);
+            _orderService.UpdateOrder(order);
 
             return NoContent();
         }
 
-        // DELETE: api/Motorcycle/5
+        // DELETE: api/Order/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteMotorcycle(int id)
+        public IActionResult DeleteOrder(int id)
         {
 
             if (!ValidateToken(out _))
@@ -139,14 +139,14 @@ namespace gbtwowheels.Controllers
             }
 
 
-            var motorcycle = _motorcycleService.GetMotorcycleById(id);
+            var order = _orderService.GetOrderById(id);
 
-            if (motorcycle == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            _motorcycleService.DeleteMotorcycle(id);
+            _orderService.DeleteOrder(id);
 
             return NoContent();
         }

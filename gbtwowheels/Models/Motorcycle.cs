@@ -36,6 +36,7 @@ namespace gbtwowheels.Models
         [Column("is_available")] 
         public bool IsAvailable { get; set; }
 
+        [NotMapped]
         public ICollection<Rent>? Rents { get; set; }
 
     }

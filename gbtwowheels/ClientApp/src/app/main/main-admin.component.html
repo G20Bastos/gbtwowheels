@@ -23,6 +23,33 @@
     <button class="btn btn-primary" type="submit">Cadastrar Moto</button>
 </form>
 
+<h2>Lista de Motos</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ano</th>
+            <th>Modelo</th>
+            <th>Placa</th>
+            <th>Cor</th>
+            <th>Cilindrada</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let moto of motorcycles" (click)="openMotoModal(moto)">
+            <td>{{ moto.year }}</td>
+            <td>{{ moto.model }}</td>
+            <td>{{ moto.licensePlate }}</td>
+            <td>{{ moto.color }}</td>
+            <td>{{ moto.engineCapacity }}</td>
+            <td>
+                <button (click)="openMotoModal(moto)">Editar</button>
+                <button *ngIf="moto.motorcycleId" (click)="confirmDeleteMoto(moto.motorcycleId!)">Excluir</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
 <h2>Cadastro de Pedidos</h2>
 <form class="form-container" (ngSubmit)="addOrder()">
     <div class="form-group">
@@ -35,3 +62,104 @@
     </div>
     <button class="btn btn-primary" type="submit">Cadastrar Pedido</button>
 </form>
+
+<h2>Lista de Pedidos</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Endereço</th>
+            <th>Valor</th>
+            <th>Data</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let order of orders" (click)="openOrderModal(order)">
+            <td>{{ order.addressOrder }}</td>
+            <td>{{ order.orderServiceValue }}</td>
+            <td>{{ order.orderCreationDate | date }}</td>
+            <td>
+                <button (click)="openOrderModal(order)">Editar</button>
+                <button *ngIf="order.orderId" (click)="confirmDeleteOrder(order.orderId!)">Excluir</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Modal de edição de Moto -->
+<div class="modal" tabindex="-1" role="dialog" *ngIf="selectedMoto">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Moto</h5>
+                <button type="button" class="close" (click)="closeMotoModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="editYear">Ano:</label>
+                        <input class="form-control" type="number" id="editYear" [(ngModel)]="selectedMoto.year" name="year">
+                    </div>
+                    <div class="form-group">
+                        <label for="editModel">Modelo:</label>
+                        <input class="form-control" type="text" id="editModel" [(ngModel)]="selectedMoto.model" name="model">
+                    </div>
+                    <div class="form-group">
+                        <label for="editLicensePlate">Placa:</label>
+                        <input class="form-control" type="text" id="editLicensePlate" [(ngModel)]="selectedMoto.licensePlate" name="licensePlate">
+                    </div>
+                    <div class="form-group">
+                        <label for="editColor">Cor:</label>
+                        <input class="form-control" type="text" id="editColor" [(ngModel)]="selectedMoto.color" name="color">
+                    </div>
+                    <div class="form-group">
+                        <label for="editEngineCapacity">Cilindrada:</label>
+                        <input class="form-control" type="text" id="editEngineCapacity" [(ngModel)]="selectedMoto.engineCapacity" name="engineCapacity">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeMotoModal()">Fechar</button>
+                <button type="button" class="btn btn-primary" (click)="saveMotoChanges()">Salvar alterações</button>
+                <button *ngIf="selectedMoto.motorcycleId"  type="button" class="btn btn-danger" (click)="confirmDeleteMoto(selectedMoto.motorcycleId!)">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de edição de Pedido -->
+<div class="modal" tabindex="-1" role="dialog" *ngIf="selectedOrder">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Pedido</h5>
+                <button type="button" class="close" (click)="closeOrderModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="editAddressOrder">Endereço do Pedido:</label>
+                        <input class="form-control" type="text" id="editAddressOrder" [(ngModel)]="selectedOrder.addressOrder" name="addressOrder">
+                    </div>
+                    <div class="form-group">
+                        <label for="editOrderServiceValue">Valor do Pedido:</label>
+                        <input class="form-control" type="number" id="editOrderServiceValue" [(ngModel)]="selectedOrder.orderServiceValue" name="orderServiceValue">
+                    </div>
+                    <div class="form-group">
+                        <label for="editOrderCreationDate">Data do Pedido:</label>
+                        <input class="form-control" type="date" id="editOrderCreationDate" [(ngModel)]="selectedOrder.orderCreationDate" name="orderCreationDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeOrderModal()">Fechar</button>
+                <button type="button" class="btn btn-primary" (click)="saveOrderChanges()">Salvar alterações</button>
+                <button *ngIf="selectedOrder.orderId" type="button" class="btn btn-danger" (click)="confirmDeleteOrder(selectedOrder.orderId!)">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>

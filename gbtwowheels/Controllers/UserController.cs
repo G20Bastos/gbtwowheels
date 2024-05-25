@@ -2,16 +2,17 @@
 using gbtwowheels.Models;
 using gbtwowheels.Interfaces;
 using Microsoft.Extensions.Logging;
+using gbtwowheels.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace gbtwowheels.Controllers
 {
-    
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-
         private readonly ILogger<UserController> _logger;
 
         public UserController(IUserService userService, ILogger<UserController> logger)
@@ -20,17 +21,43 @@ namespace gbtwowheels.Controllers
             _logger = logger;
         }
 
-        // GET: api/User
+        private bool ValidateToken(out int userId)
+        {
+            userId = 0;
+            var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            if (string.IsNullOrEmpty(token))
+            {
+                return false;
+            }
+
+            var validatedUserId = JwtService.ValidateToken(token);
+            if (validatedUserId.HasValue)
+            {
+                userId = validatedUserId.Value;
+                return true;
+            }
+            return false;
+        }
+
         [HttpGet]
         public ActionResult<IEnumerable<User>> GetUsers()
         {
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+
             return _userService.GetAllUsers().ToList();
         }
 
-        // GET: api/User/1
         [HttpGet("{id}")]
         public ActionResult<User> GetUser(int id)
         {
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+
             var user = _userService.GetUserById(id);
 
             if (user == null)
@@ -41,14 +68,14 @@ namespace gbtwowheels.Controllers
             return user;
         }
 
-        //POST: api/user/addUser
+        [AllowAnonymous]
         [HttpPost("[action]")]
         public async Task<IActionResult> AddUser([FromForm] User user)
         {
+         
             var response = new ServiceResponse<User>();
             try
             {
-
                 response = await _userService.AddUser(user);
 
                 if (!response.Success)
@@ -60,19 +87,19 @@ namespace gbtwowheels.Controllers
             }
             catch (Exception ex)
             {
-
                 _logger.LogError(ex, "An error occurred while processing the AddUser request.");
                 return StatusCode(500, response.Message);
-
             }
-          
         }
 
-
-        // PUT: api/User/5
         [HttpPut("{id}")]
         public IActionResult PutUser(int id, User user)
         {
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+
             if (id != user.UserId)
             {
                 return BadRequest();
@@ -83,10 +110,14 @@ namespace gbtwowheels.Controllers
             return NoContent();
         }
 
-        // DELETE: api/User/5
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+
             var user = _userService.GetUserById(id);
 
             if (user == null)
@@ -99,6 +130,7 @@ namespace gbtwowheels.Controllers
             return NoContent();
         }
 
+        [AllowAnonymous]
         [HttpPost("[action]")]
         public async Task<IActionResult> Login(User request)
         {
@@ -118,9 +150,7 @@ namespace gbtwowheels.Controllers
             {
                 _logger.LogError(ex, "An error occurred while processing the Login request.");
                 return StatusCode(500, response.Message);
-
             }
-            
         }
     }
 }
