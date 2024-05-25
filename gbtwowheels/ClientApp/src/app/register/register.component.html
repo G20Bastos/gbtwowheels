@@ -2,7 +2,7 @@
     <h2>Cadastre-se na plataforma</h2>
     <form (ngSubmit)="onSubmit()">
         <div class="form-group">
-            <label for="firstName">Primeiro Nome</label>
+            <label for="firstName">Nome</label>
             <input type="text" id="firstName" class="form-control" [(ngModel)]="user.firstName" name="firstName" required maxlength="20">
         </div>
         <div class="form-group">
@@ -18,16 +18,16 @@
             <input type="date" id="dateOfBirth" class="form-control" [(ngModel)]="user.dateOfBirth" name="dateOfBirth" required>
         </div>
         <div class="form-group">
-            <label for="categoryLicense">Categoria da Licença</label>
+            <label for="categoryLicense">Categoria da CNH</label>
             <input type="text" id="categoryLicense" class="form-control" [(ngModel)]="user.categoryLicense" name="categoryLicense" required maxlength="2">
         </div>
         <div class="form-group">
-            <label for="licenseNumber">Número da Licença</label>
+            <label for="licenseNumber">Número da CNH</label>
             <input type="number" id="licenseNumber" class="form-control" [(ngModel)]="user.licenseNumber" name="licenseNumber" required>
         </div>
         <div class="form-group">
-            <label for="imageLicense">Imagem da Licença</label>
-            <input type="file" id="imageLicense" class="form-control" (change)="onFileChange($event)" name="imageLicense" required>
+            <label for="imageFile">Imagem da CNH</label>
+            <input type="file" id="imageFile" class="form-control" (change)="onFileChange($event)" name="imageFile" required>
         </div>
         <div class="form-group">
             <label for="userEmail">Email</label>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,16 +18,16 @@ namespace gbtwowheels.Models
         [Required]
         [Column("model")] 
         [MaxLength(100)] 
-        public string Model { get; set; }
+        public string? Model { get; set; }
 
         [Required]
         [Column("license_plate")] 
         [MaxLength(20)] 
-        public string LicensePlate { get; set; }
+        public string? LicensePlate { get; set; }
 
         [Column("color")] 
         [MaxLength(50)] 
-        public string Color { get; set; }
+        public string? Color { get; set; }
 
         [Column("engine_capacity")] 
         public int? EngineCapacity { get; set; } 
@@ -36,7 +36,7 @@ namespace gbtwowheels.Models
         [Column("is_available")] 
         public bool IsAvailable { get; set; }
 
-        public ICollection<Rent> Rents { get; set; }
+        public ICollection<Rent>? Rents { get; set; }
 
     }
 }

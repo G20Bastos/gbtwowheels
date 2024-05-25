@@ -9,7 +9,7 @@ interface User {
   dateOfBirth: Date;
   categoryLicense: string;
   licenseNumber: number;
-  imageLicense: File | null;
+  imageFile: File | null;
   userEmail: string;
   userPassword: string;
 }
@@ -27,7 +27,7 @@ export class RegisterComponent {
     dateOfBirth: new Date(),
     categoryLicense: '',
     licenseNumber: 0,
-    imageLicense: null,
+    imageFile: null,
     userEmail: '',
     userPassword: ''
   };
@@ -36,7 +36,7 @@ export class RegisterComponent {
 
   onFileChange(event: any) {
     if (event.target.files.length > 0) {
-      this.user.imageLicense = event.target.files[0];
+      this.user.imageFile = event.target.files[0];
     }
   }
 
@@ -45,21 +45,31 @@ export class RegisterComponent {
     formData.append('firstName', this.user.firstName);
     formData.append('lastName', this.user.lastName);
     formData.append('cnpj', this.user.cnpj);
-    formData.append('dateOfBirth', this.user.dateOfBirth.toISOString());
+
+    const dateOfBirth = new Date(this.user.dateOfBirth);
+    if (!isNaN(dateOfBirth.getTime())) {
+      formData.append('dateOfBirth', dateOfBirth.toISOString());
+    } else {
+      console.error('Invalid date of birth');
+      return;
+    }
+
     formData.append('categoryLicense', this.user.categoryLicense);
     formData.append('licenseNumber', this.user.licenseNumber.toString());
-    if (this.user.imageLicense) {
-      formData.append('imageLicense', this.user.imageLicense);
+    if (this.user.imageFile) {
+      formData.append('imageFile', this.user.imageFile);
     }
     formData.append('userEmail', this.user.userEmail);
     formData.append('userPassword', this.user.userPassword);
+    formData.append('levelId', '3');
 
-    this.http.post('http://localhost:5000/api/user', formData)
+    this.http.post('https://localhost:7296/api/user/AddUser', formData)
       .subscribe(response => {
-        console.log('User registered successfully', response);
+        console.log('Succes', response);
         this.router.navigate(['/']);
       }, error => {
-        console.error('Error registering user', error);
+        console.error('Fail: ', error);
       });
   }
+
 }

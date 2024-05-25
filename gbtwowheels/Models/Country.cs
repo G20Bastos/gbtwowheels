@@ -18,8 +18,8 @@ namespace gbtwowheels.Models
         [Column("country_name")]
         public string? CountryName { get; set; }
 
-        public ICollection<State> States { get; set; }
-        public ICollection<City> Cities { get; set; }
+        public ICollection<State>? States { get; set; }
+        public ICollection<City>? Cities { get; set; }
     }
 }
 

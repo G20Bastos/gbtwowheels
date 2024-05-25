@@ -1,21 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using gbtwowheels.Models;
-using gbtwowheels.Services;
-using NuGet.Protocol.Plugins;
+using gbtwowheels.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace gbtwowheels.Controllers
 {
-    [Route("api/[controller]")]
+    
     [ApiController]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public UserController(UserService userService)
+        private readonly ILogger<UserController> _logger;
+
+        public UserController(IUserService userService, ILogger<UserController> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
         // GET: api/User
@@ -25,7 +27,7 @@ namespace gbtwowheels.Controllers
             return _userService.GetAllUsers().ToList();
         }
 
-        // GET: api/User/5
+        // GET: api/User/1
         [HttpGet("{id}")]
         public ActionResult<User> GetUser(int id)
         {
@@ -39,17 +41,33 @@ namespace gbtwowheels.Controllers
             return user;
         }
 
-        // POST: api/User
-        [HttpPost]
-        public async Task<IActionResult> AddUser(User user)
+        //POST: api/user/addUser
+        [HttpPost("[action]")]
+        public async Task<IActionResult> AddUser([FromForm] User user)
         {
-            var response = await _userService.AddUser(user);
-            if (!response.Success)
+            var response = new ServiceResponse<User>();
+            try
             {
-                return BadRequest(response);
+
+                response = await _userService.AddUser(user);
+
+                if (!response.Success)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
             }
-            return Ok(response);
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex, "An error occurred while processing the AddUser request.");
+                return StatusCode(500, response.Message);
+
+            }
+          
         }
+
 
         // PUT: api/User/5
         [HttpPut("{id}")]
@@ -81,15 +99,28 @@ namespace gbtwowheels.Controllers
             return NoContent();
         }
 
-        [HttpPost("login")]
+        [HttpPost("[action]")]
         public async Task<IActionResult> Login(User request)
         {
-            var result = await _userService.Login(request);
-            if (result.Success)
+            var response = new ServiceResponse<User>();
+            try
             {
-                return Ok(result); 
+                response = await _userService.Login(request);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+
+                return Unauthorized(response);
             }
-            return Unauthorized(result); 
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the Login request.");
+                return StatusCode(500, response.Message);
+
+            }
+            
         }
     }
 }

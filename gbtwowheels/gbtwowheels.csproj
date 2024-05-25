@@ -8,6 +8,7 @@
     <SpaProxyServerUrl>https://localhost:44493</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>da7adcc8-5990-4c36-b1c3-6488bec5f0d7</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,6 +42,12 @@
     <None Remove="Repositories\" />
     <None Remove="Helpers\" />
     <None Remove="ClientApp\src\app\register\" />
+    <None Remove="Interfaces\" />
+    <None Remove="ClientApp\src\app\access\" />
+    <None Remove="logs\" />
+    <None Remove="Utils\" />
+    <None Remove="ClientApp\src\app\main\" />
+    <None Remove="ClientApp\src\app\model\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +57,12 @@
     <Folder Include="Repositories\" />
     <Folder Include="Helpers\" />
     <Folder Include="ClientApp\src\app\register\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="ClientApp\src\app\access\" />
+    <Folder Include="logs\" />
+    <Folder Include="Utils\" />
+    <Folder Include="ClientApp\src\app\main\" />
+    <Folder Include="ClientApp\src\app\model\" />
   </ItemGroup>
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

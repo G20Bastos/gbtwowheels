@@ -15,7 +15,7 @@ namespace gbtwowheels.Models
         [Required]
         [MaxLength(100)]
         [Column("level_name")]
-        public string LevelName { get; set; }
+        public string? LevelName { get; set; }
     }
 }
 

@@ -28,7 +28,7 @@ namespace gbtwowheels.Models
         [Column("additional_value_later_date")]
         public decimal AdditionalValueLaterDate { get; set; }
 
-        public ICollection<Rent> Rents { get; set; }
+        public ICollection<Rent>? Rents { get; set; }
 
     }
 }

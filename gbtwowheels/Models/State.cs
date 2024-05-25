@@ -23,7 +23,7 @@ namespace gbtwowheels.Models
 
         public Country? Country { get; set; }
 
-        public ICollection<City> Cities { get; set; }
+        public ICollection<City>? Cities { get; set; }
     }
 }
 

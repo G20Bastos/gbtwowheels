@@ -10,8 +10,10 @@ import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { RegisterComponent } from './register/register.component';
 import { RouterModule } from '@angular/router';
-
-
+import { LoginComponent } from './access/login.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
+import { MainAdminComponent } from './main/main-admin.component';
 
 
 @NgModule({
@@ -21,17 +23,23 @@ import { RouterModule } from '@angular/router';
     HomeComponent,
     CounterComponent,
     FetchDataComponent,
-    RegisterComponent
+    RegisterComponent,
+    LoginComponent,
+    MainAdminComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
     RouterModule.forRoot([
       { path: '', redirectTo: '/register', pathMatch: 'full' },
       { path: 'register', component: RegisterComponent },
       { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent }
+      { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'login', component: LoginComponent },
+      { path: 'main-admin', component: MainAdminComponent }
     ])
   ],
   providers: [],

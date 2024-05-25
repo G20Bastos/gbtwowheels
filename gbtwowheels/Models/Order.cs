@@ -24,7 +24,7 @@ namespace gbtwowheels.Models
         public int UserDeliveryId { get; set; }
 
         [Column("address_order")]
-        public string AddressOrder { get; set; }
+        public string? AddressOrder { get; set; }
 
         [Required]
         [Column("order_service_value", TypeName = "numeric(10,2)")]
@@ -38,14 +38,16 @@ namespace gbtwowheels.Models
         [Column("order_finish_date")]
         public DateTime OrderFinishDate { get; set; }
 
+        [NotMapped]
         [ForeignKey("UserOrderCreationId")]
-        public User UserOrderCreation { get; set; }
+        public User? UserOrderCreation { get; set; }
 
+        [NotMapped]
         [ForeignKey("UserDeliveryId")]
-        public User UserDelivery { get; set; }
+        public User? UserDelivery { get; set; }
 
         [ForeignKey("StatusOrderId")]
-        public StatusOrder StatusOrder { get; set; }
+        public StatusOrder? StatusOrder { get; set; }
     }
 }
 

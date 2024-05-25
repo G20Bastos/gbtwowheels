@@ -6,16 +6,22 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
 using BCrypt.Net;
+using gbtwowheels.Interfaces;
+using Azure;
+using gbtwowheels.Controllers;
 
 namespace gbtwowheels.Repositories
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public UserRepository(ApplicationDbContext context)
+        private readonly ILogger<UserRepository> _logger;
+
+        public UserRepository(ApplicationDbContext context, ILogger<UserRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public IEnumerable<User> GetAll()
@@ -52,38 +58,79 @@ namespace gbtwowheels.Repositories
 
         public async Task<ServiceResponse<User>> Login(User request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserEmail == request.UserEmail);
+            var response = new ServiceResponse<User>();
 
-            if (user == null)
+            try
             {
-                return new ServiceResponse<User> { Success = false, Message = "Wrong User or Password" };
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserEmail == request.UserEmail);
+
+                if (user != null)
+                {
+                    response.Data = user;
+                    response.Success = true;
+                }
+                else
+                {
+                    response.Success = false;
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while login");
             }
 
+            return response;
             
-            if (!BCrypt.Net.BCrypt.Verify(request.UserPassword, user.UserPassword))
-            {
-                return new ServiceResponse<User> { Success = false, Message = "Wrong User or Password" };
-            }
-
-            return new ServiceResponse<User> { Success = true, Data = user };
         }
+
 
         public async Task<ServiceResponse<User>> AddUser(User user)
         {
-            
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserEmail == user.UserEmail);
-            if (existingUser != null)
+
+            var response = new ServiceResponse<User>();
+
+            try
             {
-                return new ServiceResponse<User> { Success = false, Message = "Email already exists." };
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                response.Success = true;
+                response.Data = user;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while add user in database");
+
             }
 
-           
-            user.UserPassword = BCrypt.Net.BCrypt.HashPassword(user.UserPassword);
+            return response;
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+        }
 
-            return new ServiceResponse<User> { Success = true, Data = user };
+        public async Task<bool> IsExistingUser(User user)
+        {
+            
+            try
+            {
+                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserEmail == user.UserEmail);
+                if (existingUser != null)
+                {
+                    return true;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while analizying if the user already exists in database");
+
+            }
+
+            return false;
         }
     }
 }

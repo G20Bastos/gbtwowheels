@@ -15,19 +15,19 @@ namespace gbtwowheels.Models
         [ForeignKey("User")] 
         [Column("user_id")] 
         public int UserId { get; set; }
-        public User User { get; set; }
+        public User? User { get; set; }
 
         [Required]
         [ForeignKey("Motorcycle")] 
         [Column("motorcycle_id")] 
         public int MotorcycleId { get; set; }
-        public Motorcycle Motorcycle { get; set; }
+        public Motorcycle? Motorcycle { get; set; }
 
         [Required]
         [ForeignKey("RentalPlan")] 
         [Column("rental_plan_id")] 
         public int RentalPlanId { get; set; }
-        public RentalPlan RentalPlan { get; set; }
+        public RentalPlan? RentalPlan { get; set; }
 
         [Column("start_rent_date")] 
         public DateTime? StartRentDate { get; set; }

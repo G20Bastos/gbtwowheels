@@ -15,7 +15,7 @@ namespace gbtwowheels.Models
         [Required]
         [MaxLength(100)]
         [Column("city_name")]
-        public string CityName { get; set; }
+        public string? CityName { get; set; }
 
         [ForeignKey("State")]
         [Column("state_id")]
@@ -25,8 +25,8 @@ namespace gbtwowheels.Models
         [Column("country_id")]
         public int? CountryId { get; set; }
 
-        public State State { get; set; }
-        public Country Country { get; set; }
+        public State? State { get; set; }
+        public Country? Country { get; set; }
     }
 }
 

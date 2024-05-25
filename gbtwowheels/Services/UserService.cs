@@ -1,18 +1,25 @@
 ﻿using System.Collections.Generic;
+using Azure;
+using gbtwowheels.Controllers;
 using gbtwowheels.Helpers;
+using gbtwowheels.Interfaces;
 using gbtwowheels.Models;
+using gbtwowheels.Utils;
 using gbtwowheels.Repositories;
+using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
 
 namespace gbtwowheels.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
-        private readonly UserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ILogger<UserController> _logger;
 
-        public UserService(UserRepository userRepository)
+        public UserService(IUserRepository userRepository, ILogger<UserController> logger)
         {
             _userRepository = userRepository;
+            _logger = logger;
         }
 
         public IEnumerable<User> GetAllUsers()
@@ -27,8 +34,50 @@ namespace gbtwowheels.Services
 
         public async Task<ServiceResponse<User>> AddUser(User user)
         {
-            return await _userRepository.AddUser(user);
+            var response = new ServiceResponse<User>();
+
+            try
+            {
+
+                if (await _userRepository.IsExistingUser(user))
+                {
+                    response.Success = false;
+                    response.Message = "Usuário já cadastrado na plataforma.";
+
+                }
+                else
+                {
+                    //Encrypting password
+                    user.UserPassword = BCrypt.Net.BCrypt.HashPassword(user.UserPassword);
+                    var result = await _userRepository.AddUser(user);
+                    response.Success = true;
+                    response.Message = "Usuário cadastrado com sucesso!";
+                    response.Data = result.Data;
+
+                    if (user.ImageFile != null)
+                    {
+                       new Util().SaveImageInLocalStorage(response.Data!.ImageFile!, response.Data!.UserId.ToString(), "png", "wwwroot/uploads");
+                    }
+                }
+
+                
+            }
+            catch (Exception ex)
+            {
+                
+                _logger.LogError(ex, "Error to add user in service");
+
+                
+                response.Success = false;
+                response.Message = "Ocorreu um erro ao adicionar o usuário na plataforma.";
+
+            }
+
+            return response;
+
         }
+
+        
 
         public void UpdateUser(User user)
         {
@@ -40,19 +89,56 @@ namespace gbtwowheels.Services
             _userRepository.Delete(id);
         }
 
-        public async Task<ServiceResponse<string>> Login(User request)
+        public async Task<ServiceResponse<User>> Login(User request)
         {
-            var user = await _userRepository.Login(request);
+            var response = new ServiceResponse<User>();
 
-            if (user == null)
+            try
             {
-                return new ServiceResponse<string> { Success = false, Message = "Wrong user or passwrd" };
+
+                var result = await _userRepository.Login(request);
+
+                if (result.Success)
+                {
+                    //Verifying password
+                    if (BCrypt.Net.BCrypt.Verify(request.UserPassword, result.Data!.UserPassword))
+                    {
+                        var token = JwtService.GenerateToken(result.Data!.UserId);
+                        result.Data!.TokenAccess = token;
+
+
+                        response.Success = true;
+                        response.Message = "Login realizado com sucesso!";
+                        response.Data = result.Data;
+                    }
+                    else
+                    {
+                        response.Success = false;
+                        response.Message = "Usuário e/ou senha incorretos";
+                    }
+
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = "Usuário e/ou senha incorretos";
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex, "Error while login in service");
+
+
+                response.Success = false;
+                response.Message = "Ocorreu um erro realizar login na plataforma.";
+
             }
 
-            
-            var token = JwtService.GenerateToken(user.Data.UserId);
-
-            return new ServiceResponse<string> { Success = true, Data = token };
+            return response;
+           
         }
 
        

@@ -14,7 +14,7 @@ namespace gbtwowheels.Models
         [Required]
         [Column("status")] 
         [MaxLength(20)] 
-        public string Status { get; set; }
+        public string? Status { get; set; }
     }
 }
 

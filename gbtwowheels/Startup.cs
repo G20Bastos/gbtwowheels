@@ -1,4 +1,7 @@
 ﻿using gbtwowheels.Data;
+using gbtwowheels.Interfaces;
+using gbtwowheels.Repositories;
+using gbtwowheels.Services;
 using Microsoft.EntityFrameworkCore;
 
 public class Startup
@@ -15,9 +18,24 @@ public class Startup
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
+
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddControllersWithViews();
 
-       
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAllOrigins",
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+        });
+
+
+
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -36,6 +54,8 @@ public class Startup
         app.UseStaticFiles();
 
         app.UseRouting();
+
+        app.UseCors("AllowAllOrigins");
 
         app.UseAuthorization();
 
