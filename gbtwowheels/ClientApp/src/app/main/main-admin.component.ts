@@ -16,6 +16,7 @@ export class MainAdminComponent implements OnInit {
 
   motorcycles: Motorcycle[] = [];
   orders: Order[] = [];
+  years: number[] = [];
 
   moto: Motorcycle = { year: 2024, model: '', licensePlate: '', color: '', engineCapacity: '', isAvailable: true };
   order: Order = { addressOrder: '', userOrderCreationId: parseInt(localStorage.getItem('userId')!, 10), orderServiceValue: 0, orderCreationDate: new Date(), statusOrderId: 1, userDeliveryId: undefined, orderFinishDate: undefined };
@@ -28,6 +29,15 @@ export class MainAdminComponent implements OnInit {
   ngOnInit(): void {
     this.fetchMotorcycles();
     this.fetchOrders();
+    this.populateYears();
+    this.moto.year = new Date().getFullYear();
+  }
+
+  populateYears(): void {
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year >= 1990; year--) {
+      this.years.push(year);
+    }
   }
 
   getToken(): string | null {

@@ -33,7 +33,11 @@ import { AuthInterceptor } from './services/auth.interceptor';
     HttpClientModule,
     FormsModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      positionClass: 'toast-bottom-right',
+      timeOut: 3000,
+      preventDuplicates: true,
+    }),
     RouterModule.forRoot([
       { path: '', redirectTo: '/register', pathMatch: 'full' },
       { path: 'register', component: RegisterComponent },

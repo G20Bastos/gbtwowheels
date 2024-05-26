@@ -2,23 +2,25 @@
 <form class="form-container" (ngSubmit)="addMoto()">
     <div class="form-group">
         <label for="year">Ano:</label>
-        <input class="form-control" type="number" id="year" name="year" [(ngModel)]="moto.year" required>
+        <select class="form-control" id="year" name="year" [(ngModel)]="moto.year" required>
+            <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+        </select>
     </div>
     <div class="form-group">
         <label for="model">Modelo:</label>
-        <input class="form-control" type="text" id="model" name="model" [(ngModel)]="moto.model" required>
+        <input class="form-control" type="text" id="model" name="model" [(ngModel)]="moto.model" maxlength="50" required>
     </div>
     <div class="form-group">
         <label for="licensePlate">Placa:</label>
-        <input class="form-control" type="text" id="licensePlate" name="licensePlate" [(ngModel)]="moto.licensePlate" required>
+        <input class="form-control" type="text" id="licensePlate" name="licensePlate" [(ngModel)]="moto.licensePlate" maxlength="7" required>
     </div>
     <div class="form-group">
         <label for="color">Cor:</label>
-        <input class="form-control" type="text" id="color" name="color" [(ngModel)]="moto.color" required>
+        <input class="form-control" type="text" id="color" name="color" [(ngModel)]="moto.color" maxlength="20" required>
     </div>
     <div class="form-group">
         <label for="engineCapacity">Cilindrada:</label>
-        <input class="form-control" type="text" id="engineCapacity" name="engineCapacity" [(ngModel)]="moto.engineCapacity" required>
+        <input class="form-control" type="number" id="engineCapacity" name="engineCapacity" [(ngModel)]="moto.engineCapacity" required>
     </div>
     <button class="btn btn-primary" type="submit">Cadastrar Moto</button>
 </form>
@@ -100,30 +102,32 @@
                 <form>
                     <div class="form-group">
                         <label for="editYear">Ano:</label>
-                        <input class="form-control" type="number" id="editYear" [(ngModel)]="selectedMoto.year" name="year">
+                        <select class="form-control" id="editYear" [(ngModel)]="selectedMoto.year" name="year">
+                            <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="editModel">Modelo:</label>
-                        <input class="form-control" type="text" id="editModel" [(ngModel)]="selectedMoto.model" name="model">
+                        <input class="form-control" type="text" id="editModel" [(ngModel)]="selectedMoto.model" name="model" maxlength="50">
                     </div>
                     <div class="form-group">
                         <label for="editLicensePlate">Placa:</label>
-                        <input class="form-control" type="text" id="editLicensePlate" [(ngModel)]="selectedMoto.licensePlate" name="licensePlate">
+                        <input class="form-control" type="text" id="editLicensePlate" [(ngModel)]="selectedMoto.licensePlate" name="licensePlate" maxlength="7">
                     </div>
                     <div class="form-group">
                         <label for="editColor">Cor:</label>
-                        <input class="form-control" type="text" id="editColor" [(ngModel)]="selectedMoto.color" name="color">
+                        <input class="form-control" type="text" id="editColor" [(ngModel)]="selectedMoto.color" name="color" maxlength="20">
                     </div>
                     <div class="form-group">
                         <label for="editEngineCapacity">Cilindrada:</label>
-                        <input class="form-control" type="text" id="editEngineCapacity" [(ngModel)]="selectedMoto.engineCapacity" name="engineCapacity">
+                        <input class="form-control" type="number" id="editEngineCapacity" [(ngModel)]="selectedMoto.engineCapacity" name="engineCapacity">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" (click)="closeMotoModal()">Fechar</button>
                 <button type="button" class="btn btn-primary" (click)="saveMotoChanges()">Salvar alterações</button>
-                <button *ngIf="selectedMoto.motorcycleId"  type="button" class="btn btn-danger" (click)="confirmDeleteMoto(selectedMoto.motorcycleId!)">Excluir</button>
+                <button *ngIf="selectedMoto.motorcycleId" type="button" class="btn btn-danger" (click)="confirmDeleteMoto(selectedMoto.motorcycleId!)">Excluir</button>
             </div>
         </div>
     </div>
