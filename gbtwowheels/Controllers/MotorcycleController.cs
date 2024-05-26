@@ -1,4 +1,6 @@
 ﻿using System;
+using Azure;
+using gbtwowheels.Filters;
 using gbtwowheels.Helpers;
 using gbtwowheels.Interfaces;
 using gbtwowheels.Models;
@@ -109,23 +111,39 @@ namespace gbtwowheels.Controllers
 
         // PUT: api/Motorcycle/5
         [HttpPut("{id}")]
-        public IActionResult PutMotorcycle(int id, Motorcycle motorcycle)
+        public async Task<IActionResult> PutMotorcycle(int id, Motorcycle motorcycle)
         {
+            var response = new ServiceResponse<Motorcycle>();
 
-            if (!ValidateToken(out _))
+            try
             {
-                return Unauthorized("Invalid token");
+                if (!ValidateToken(out _))
+                {
+                    return Unauthorized("Invalid token");
+                }
+
+
+                if (id != motorcycle.MotorcycleId)
+                {
+                    return BadRequest();
+                }
+
+               response = await _motorcycleService.UpdateMotorcycle(motorcycle);
+
+                if (!response.Success)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the AddMotorcycle request.");
+                return StatusCode(500, response.Message);
             }
 
-
-            if (id != motorcycle.MotorcycleId)
-            {
-                return BadRequest();
-            }
-
-            _motorcycleService.UpdateMotorcycle(motorcycle);
-
-            return NoContent();
+            
         }
 
         // DELETE: api/Motorcycle/5
@@ -151,7 +169,29 @@ namespace gbtwowheels.Controllers
             return NoContent();
         }
 
-      
+        // GET: api/Motorcycle/getByFilter
+        [HttpPost("getByFilter")]
+        public ActionResult<IEnumerable<Motorcycle>> GetByFilter([FromBody] MotorcycleFilters filters)
+        {
+
+
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+
+            try
+            {
+
+                return _motorcycleService.GetByFilterAsync(filters).ToList();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the AddMotorcycle request.");
+                return StatusCode(500, "Não foram encontrados resultados com os filtros passados");
+            }
+        }
     }
 }
 

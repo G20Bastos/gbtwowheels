@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Motorcycle } from '../model/motorcycle.model';
-import { Order } from '../model/order.model';
 import { ToastrService } from 'ngx-toastr';
+import { Order } from '../model/order.model';
+import { Motorcycle } from '../model/motorcycle.model';
+import { StatusOrder } from '../model/status-order.model';
+import { OrdersService } from '../services/orders.service';
+import { MotorcyclesService } from '../services/motorcycles.service';
+import { MotorcycleFilter } from '../filters/motorcycle.filter';
 
 @Component({
   selector: 'app-main-admin',
@@ -10,163 +13,253 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./main-admin.component.css']
 })
 export class MainAdminComponent implements OnInit {
-
-  apiMotocycleUrl: string = 'https://localhost:7296/api/motorcycle';
-  apiOrderUrl: string = 'https://localhost:7296/api/order';
-
-  motorcycles: Motorcycle[] = [];
+  motos: Motorcycle[] = [];
+  filteredMotorcycles: Motorcycle[] = [];
   orders: Order[] = [];
+  filteredOrders: Order[] = [];
   years: number[] = [];
+  statusList: { key: number; value: string }[] = [];
+  statusAvailabeMotoList: { key: boolean; value: string }[] = [];
 
-  moto: Motorcycle = { year: 2024, model: '', licensePlate: '', color: '', engineCapacity: '', isAvailable: true };
-  order: Order = { addressOrder: '', userOrderCreationId: parseInt(localStorage.getItem('userId')!, 10), orderServiceValue: 0, orderCreationDate: new Date(), statusOrderId: 1, userDeliveryId: undefined, orderFinishDate: undefined };
 
+  moto: Motorcycle = this.createEmptyMoto();
+  order: Order = this.createEmptyOrder();
   selectedMoto: Motorcycle | null = null;
   selectedOrder: Order | null = null;
+  isMotoCreateModalOpen = false;
+  isOrderCreateModalOpen = false;
+  filterMoto: MotorcycleFilter = { year: 0, color: '', engineCapacity: 0, licensePlate: '', model: '', isAvailable: true };
+  filterOrder: any = {};
 
-  constructor(private http: HttpClient, private toastr: ToastrService) { }
+  constructor(
+    private motorcyclesService: MotorcyclesService,
+    private ordersService: OrdersService,
+    private toastr: ToastrService
+  ) { }
 
-  ngOnInit(): void {
-    this.fetchMotorcycles();
-    this.fetchOrders();
-    this.populateYears();
-    this.moto.year = new Date().getFullYear();
+  ngOnInit() {
+    this.loadMotorcycles();
+    this.loadOrders();
+    this.years = this.generateYears();
+    this.statusList = [
+      { key: 1, value: 'Disponível' },
+      { key: 2, value: 'Aceito' },
+      { key: 3, value: 'Entregue' }
+    ];
+    this.statusAvailabeMotoList = [
+      { key: false, value: 'Não' },
+      { key: true, value: 'Sim' }
+    ];
   }
 
-  populateYears(): void {
+  generateYears(): number[] {
     const currentYear = new Date().getFullYear();
-    for (let year = currentYear; year >= 1990; year--) {
-      this.years.push(year);
+    const years = [];
+    for (let year = 1980; year <= currentYear; year++) {
+      years.push(year);
     }
+    return years;
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('authToken');
+  getStatusName(statusId: number): string {
+    const status = this.statusList.find(option => option.key === statusId);
+    return status ? status.value : 'Desconhecido';
   }
 
-  createHeaders(): HttpHeaders {
-    const token = this.getToken();
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  createEmptyMoto(): Motorcycle {
+    return {
+      year: 0,
+      model: '',
+      licensePlate: '',
+      color: '',
+      engineCapacity: '0',
+      isAvailable: true
+    };
   }
 
-  fetchMotorcycles() {
-    const headers = this.createHeaders();
-    this.http.get<Motorcycle[]>(this.apiMotocycleUrl, { headers })
-      .subscribe(motos => this.motorcycles = motos);
+  createEmptyOrder(): Order {
+    return {
+      userOrderCreationId: parseInt(localStorage.getItem('userId')!, 10),
+      addressOrder: '',
+      orderServiceValue: 0,
+      orderCreationDate: new Date(),
+      statusOrderId: 0
+    };
   }
 
-  fetchOrders() {
-    const headers = this.createHeaders();
-    this.http.get<Order[]>(this.apiOrderUrl, { headers })
-      .subscribe(orders => this.orders = orders);
+  loadMotorcycles() {
+    this.motorcyclesService.getAllMotorcycles().subscribe(motos => {
+      this.motos = motos;
+      this.applyMotoFilters();
+    });
   }
 
-  addMoto() {
-    const headers = this.createHeaders();
-    if (this.moto.year && this.moto.model && this.moto.licensePlate && this.moto.color && this.moto.engineCapacity) {
-      this.http.post(this.apiMotocycleUrl + '/addMotorcycle', this.moto, { headers })
-        .subscribe(() => {
-          this.fetchMotorcycles();
-          this.moto = { year: 2024, model: '', licensePlate: '', color: '', engineCapacity: '', isAvailable: true };
-          this.toastr.success('Moto cadastrada com sucesso');
-        });
-    } else {
-      this.toastr.error('Preencha todos os campos');
-    }
+  loadOrders() {
+    this.ordersService.getAllOrders().subscribe(orders => {
+      this.orders = orders;
+      this.applyOrderFilters();
+    });
   }
 
-  addOrder() {
-    const headers = this.createHeaders();
-    if (this.order.addressOrder && this.order.orderServiceValue) {
-      this.http.post(this.apiOrderUrl + '/addOrder', this.order, { headers })
-        .subscribe(() => {
-          this.fetchOrders();
-          this.order = { addressOrder: '', orderServiceValue: 0, orderCreationDate: new Date(), userOrderCreationId: parseInt(localStorage.getItem('userId')!, 10), statusOrderId: 1, userDeliveryId: undefined, orderFinishDate: undefined };
-          this.toastr.success('Pedido cadastrado com sucesso');
-        });
-    } else {
-      this.toastr.error('Preencha todos os campos');
-    }
+  openMotoCreateModal() {
+    this.moto = this.createEmptyMoto();
+    this.isMotoCreateModalOpen = true;
   }
 
-  openMotoModal(moto: Motorcycle) {
+  closeMotoCreateModal() {
+    this.isMotoCreateModalOpen = false;
+  }
+
+  openMotoEditModal(moto: Motorcycle) {
     this.selectedMoto = { ...moto };
   }
 
-  closeMotoModal() {
+  closeMotoEditModal() {
     this.selectedMoto = null;
   }
 
-  saveMotoChanges() {
-    const headers = this.createHeaders();
-    if (this.selectedMoto && this.selectedMoto.year && this.selectedMoto.model && this.selectedMoto.licensePlate && this.selectedMoto.color && this.selectedMoto.engineCapacity) {
-      this.editMoto(this.selectedMoto, headers);
-      this.closeMotoModal();
-      this.toastr.success('Alterações salvas com sucesso');
-    } else {
-      this.toastr.error('Preencha todos os campos');
+
+  addMoto() {
+    if (this.moto.year && this.moto.model && this.moto.licensePlate && this.moto.color && this.moto.engineCapacity) {
+    this.motorcyclesService.createMotorcycle(this.moto).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadMotorcycles();
+          this.toastr.success(response.message);
+          this.closeMotoCreateModal();
+        } else {
+          this.toastr.error(response.message);
+        }
+      },
+      error: (error) => {
+        if (error.error && error.error.message) {
+          this.toastr.error(error.error.message);
+        } else {
+          this.toastr.error('Ocorreu um erro ao cadastrar a moto.');
+        }
+        console.error(error);
+      }
+    });
+  
+  } else {
+  this.toastr.error('Preencha todos os campos');
+}
+}
+  
+
+
+
+
+  saveMoto() {
+    if (this.selectedMoto && this.selectedMoto.motorcycleId) {
+      this.motorcyclesService.updateMotorcycle(this.selectedMoto).subscribe(() => {
+        this.loadMotorcycles();
+        this.toastr.success('Moto atualizada com sucesso!');
+        this.closeMotoEditModal();
+      }, error => {
+        this.toastr.error('Erro ao atualizar moto.');
+      });
     }
   }
 
-  confirmDeleteMoto(id: number) {
-    if (confirm('Deseja excluir o registro?')) {
-      this.deleteMoto(id);
-      this.closeMotoModal();
+
+  confirmDeleteMoto(motorcycleId: number) {
+    if (confirm('Tem certeza que deseja excluir esta moto?')) {
+      this.motorcyclesService.deleteMotorcycle(motorcycleId).subscribe(() => {
+        this.loadMotorcycles();
+        this.toastr.success('Moto excluída com sucesso!');
+      }, error => {
+        this.toastr.error('Erro ao excluir moto.');
+      });
     }
   }
 
-  openOrderModal(order: Order) {
+  applyMotoFilters() {
+    const filters: MotorcycleFilter = {
+      year: this.filterMoto.year,
+      model: this.filterMoto.model,
+      licensePlate: this.filterMoto.licensePlate,
+      color: this.filterMoto.color,
+      engineCapacity: this.filterMoto.engineCapacity,
+      isAvailable: this.filterMoto.isAvailable
+    };
+    this.motorcyclesService.getMotorcyclesByFilter(filters).subscribe({
+      next: (motorcycles) => {
+        this.filteredMotorcycles = motorcycles;
+      },
+      error: (error) => {
+        this.toastr.error('Resultados não encontrados para o filtro informado.');
+      }
+    });
+  }
+
+
+  resetMotoFilters() {
+    this.filterMoto = { year: 0, color: '', engineCapacity: 0, licensePlate: '', model: '', isAvailable: true };
+    this.applyMotoFilters();
+  }
+
+  openOrderCreateModal() {
+    this.order = this.createEmptyOrder();
+    this.isOrderCreateModalOpen = true;
+  }
+
+  closeOrderCreateModal() {
+    this.isOrderCreateModalOpen = false;
+  }
+
+  openOrderEditModal(order: Order) {
     this.selectedOrder = { ...order };
   }
 
-  closeOrderModal() {
+  closeOrderEditModal() {
     this.selectedOrder = null;
   }
 
-  saveOrderChanges() {
-    const headers = this.createHeaders();
-    if (this.selectedOrder && this.selectedOrder.addressOrder && this.selectedOrder.orderServiceValue) {
-      this.editOrder(this.selectedOrder, headers);
-      this.closeOrderModal();
-      this.toastr.success('Alterações salvas com sucesso');
-    } else {
-      this.toastr.error('Preencha todos os campos');
+  addOrder() {
+    this.ordersService.createOrder(this.order).subscribe(() => {
+      this.loadOrders();
+      this.toastr.success('Pedido adicionado com sucesso!');
+      this.closeOrderCreateModal();
+    }, error => {
+      this.toastr.error('Erro ao adicionar pedido.');
+    });
+  }
+
+  saveOrder() {
+    if (this.selectedOrder && this.selectedOrder.orderId) {
+      this.ordersService.updateOrder(this.selectedOrder).subscribe(() => {
+        this.loadOrders();
+        this.toastr.success('Pedido atualizado com sucesso!');
+        this.closeOrderEditModal();
+      }, error => {
+        this.toastr.error('Erro ao atualizar pedido.');
+      });
     }
   }
 
-  confirmDeleteOrder(id: number) {
-    if (confirm('Deseja excluir o registro?')) {
-      this.deleteOrder(id);
+  confirmDeleteOrder(orderId: number) {
+    if (confirm('Tem certeza que deseja excluir este pedido?')) {
+      this.ordersService.deleteOrder(orderId).subscribe(() => {
+        this.loadOrders();
+        this.toastr.success('Pedido excluído com sucesso!');
+      }, error => {
+        this.toastr.error('Erro ao excluir pedido.');
+      });
     }
   }
 
-  editMoto(moto: Motorcycle, headers: HttpHeaders) {
-    this.http.put(this.apiMotocycleUrl + `/${moto.motorcycleId}`, moto, { headers })
-      .subscribe(() => {
-        this.fetchMotorcycles();
-      });
+  applyOrderFilters() {
+    this.filteredOrders = this.orders.filter(order => {
+      return (!this.filterOrder.statusOrderId || order.statusOrderId === this.filterOrder.statusOrderId) &&
+        (!this.filterOrder.addressOrder || order.addressOrder.includes(this.filterOrder.addressOrder)) &&
+        (!this.filterOrder.orderCreationDate || new Date(order.orderCreationDate).toISOString().substring(0, 10) === this.filterOrder.orderCreationDate);
+    });
   }
 
-  deleteMoto(id: number) {
-    const headers = this.createHeaders();
-    this.http.delete(this.apiMotocycleUrl + `/${id}`, { headers })
-      .subscribe(() => {
-        this.fetchMotorcycles();
-      });
-  }
-
-  editOrder(order: Order, headers: HttpHeaders) {
-    this.http.put(this.apiOrderUrl + `/${order.orderId}`, order, { headers })
-      .subscribe(() => {
-        this.fetchOrders();
-      });
-  }
-
-  deleteOrder(id: number) {
-    const headers = this.createHeaders();
-    this.http.delete(this.apiOrderUrl + `/${id}`, { headers })
-      .subscribe(() => {
-        this.fetchOrders();
-      });
+  resetOrderFilters() {
+    this.filterOrder = {};
+    this.applyOrderFilters();
   }
 }
+
