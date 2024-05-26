@@ -13,6 +13,7 @@ namespace gbtwowheels.Interfaces
         Task<ServiceResponse<User>> Login(User request);
         Task<ServiceResponse<User>> AddUser(User user);
         Task<bool> IsExistingUser(User user);
+        Task<bool> IsExistingCNPJ(User user);
     }
 }
 

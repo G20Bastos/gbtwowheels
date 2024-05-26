@@ -32,7 +32,7 @@ namespace gbtwowheels.Services
             return _userRepository.GetById(id);
         }
 
-        public async Task<ServiceResponse<User>> AddUser(User user)
+        public async Task<ServiceResponse<User>> AddUser(User user, IFormFile imageFile)
         {
             var response = new ServiceResponse<User>();
 
@@ -45,14 +45,21 @@ namespace gbtwowheels.Services
                     response.Message = "Usuário já cadastrado na plataforma.";
 
                 }
+                else if (await _userRepository.IsExistingCNPJ(user))
+                {
+                    response.Success = false;
+                    response.Message = "CNPJ já cadastrado na plataforma.";
+
+                }
                 else
                 {
-                    //Encrypting password
+                  
                     user.UserPassword = BCrypt.Net.BCrypt.HashPassword(user.UserPassword);
+                    user.ImageFile = imageFile;
                     user.ImageLicense = user.ImageFile!.FileName;
                     var result = await _userRepository.AddUser(user);
                     response.Success = true;
-                    response.Message = "Usuário cadastrado com sucesso!";
+                    response.Message = "Registro realizado com sucesso! Bem-vindo(a) a plataforma!";
                     response.Data = result.Data;
 
                     if (user.ImageFile != null)

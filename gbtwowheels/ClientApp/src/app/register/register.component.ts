@@ -1,75 +1,153 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { User } from '../model/user.model';
+import { UsersService } from '../services/users.service';
 
-interface User {
-  firstName: string;
-  lastName: string;
-  cnpj: string;
-  dateOfBirth: Date;
-  categoryLicense: string;
-  licenseNumber: number;
-  imageFile: File | null;
-  userEmail: string;
-  userPassword: string;
-}
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-export class RegisterComponent {
-  user: User = {
-    firstName: '',
-    lastName: '',
-    cnpj: '',
-    dateOfBirth: new Date(),
-    categoryLicense: '',
-    licenseNumber: 0,
-    imageFile: null,
-    userEmail: '',
-    userPassword: ''
-  };
+export class RegisterComponent implements OnInit{
 
-  constructor(private http: HttpClient, private router: Router) { }
+
+  user: User = this.createEmptyUser();
+
+
+  licenseCategories = [
+    { key: 'A', value: 'A' },
+    { key: 'B', value: 'B' },
+    { key: 'AB', value: 'AB' }
+  ];
+
+  constructor(private http: HttpClient, private router: Router, private toastr: ToastrService, private usersService: UsersService) { }
+
+  ngOnInit() {
+
+    
+  }
 
   onFileChange(event: any) {
     if (event.target.files.length > 0) {
-      this.user.imageFile = event.target.files[0];
+      const file = event.target.files[0];
+      const fileType = file.type;
+
+      if (fileType === 'image/png' || fileType === 'image/bmp') {
+        this.user.imageFile = file;
+      } else {
+        event.target.value = '';
+        this.user.imageFile = null;
+        this.toastr.error('Favor, insira arquivos apenas com os formatos: PNG, BMP');
+      }
     }
-  }
+
+   }
 
   onSubmit() {
-    const formData = new FormData();
-    formData.append('firstName', this.user.firstName);
-    formData.append('lastName', this.user.lastName);
-    formData.append('cnpj', this.user.cnpj);
 
-    const dateOfBirth = new Date(this.user.dateOfBirth);
-    if (!isNaN(dateOfBirth.getTime())) {
-      formData.append('dateOfBirth', dateOfBirth.toISOString());
+    if (this.user.firstName && this.user.lastName && this.user.cnpj && this.user.dateOfBirth && this.user.categoryLicense, this.user.licenseNumber && this.user.imageFile, this.user.userEmail, this.user.userPassword) {
+
+      const formData = new FormData();
+      const dateOfBirth = new Date(this.user.dateOfBirth);
+      if (!isNaN(dateOfBirth.getTime())) {
+        const today = new Date();
+        let age = today.getFullYear() - dateOfBirth.getFullYear();
+        const monthDifference = today.getMonth() - dateOfBirth.getMonth();
+        const dayDifference = today.getDate() - dateOfBirth.getDate();
+
+        if (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)) {
+          age--;
+        }
+
+        if (age < 18) {
+          this.toastr.error('É necessário ter 18 anos ou mais');
+          return;
+        }
+      } else {
+        this.toastr.error('Data de nascimento inválida');
+        return;
+      }
+
+
+      if (this.user.imageFile) {
+
+        this.usersService.createUser(this.user, this.user.imageFile).subscribe({
+          next: (response) => {
+            if (response.success) {
+              this.toastr.success(response.message);
+              this.resetForm();
+              this.router.navigate(['/login']);
+            } else {
+              this.toastr.error(response.message);
+            }
+          },
+          error: (error) => {
+            if (error.error && error.error.message) {
+              this.toastr.error(error.error.message);
+            } else {
+              this.toastr.error('Ocorreu um erro ao cadastrar o usuário.');
+            }
+            console.error(error);
+          }
+        });
+      }
+
+
     } else {
-      console.error('Invalid date of birth');
-      return;
+      this.toastr.error('Preencha todos os campos');
+    }
+    
+  }
+
+  createEmptyUser(): User {
+    return {
+      firstName: '',
+      lastName: '',
+      cnpj: '',
+      dateOfBirth: new Date(),
+      categoryLicense: 'A',
+      licenseNumber: 0,
+      imageFile: null,
+      userEmail: '',
+      userPassword: '',
+      levelId: 3
+    };
+  }
+
+  applyCnpjMask(event: any) {
+    const cnpj = event.target.value.replace(/\D/g, '');
+    let maskedCnpj = '';
+
+    if (cnpj.length <= 14) {
+      maskedCnpj = cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+    } else {
+      maskedCnpj = cnpj.slice(0, 14).replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
     }
 
-    formData.append('categoryLicense', this.user.categoryLicense);
-    formData.append('licenseNumber', this.user.licenseNumber.toString());
-    if (this.user.imageFile) {
-      formData.append('imageFile', this.user.imageFile);
-    }
-    formData.append('userEmail', this.user.userEmail);
-    formData.append('userPassword', this.user.userPassword);
-    formData.append('levelId', '3');
+    event.target.value = maskedCnpj;
+  }
 
-    this.http.post('https://localhost:7296/api/user/AddUser', formData)
-      .subscribe(response => {
-        console.log('Succes', response);
-        this.router.navigate(['/']);
-      }, error => {
-        console.error('Fail: ', error);
-      });
+
+  resetForm() {
+    this.user = {
+      firstName: '',
+      lastName: '',
+      cnpj: '',
+      dateOfBirth: new Date(),
+      categoryLicense: 'A',
+      licenseNumber: 0,
+      imageFile: null,
+      userEmail: '',
+      userPassword: '',
+      levelId: 3
+    };
+    const fileInput = document.getElementById('imageFile') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
 }

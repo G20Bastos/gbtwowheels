@@ -132,5 +132,26 @@ namespace gbtwowheels.Repositories
 
             return false;
         }
+
+        public async Task<bool> IsExistingCNPJ(User user)
+        {
+            try
+            {
+                var existingCNPJ = await _context.Users.FirstOrDefaultAsync(u => u.CNPJ == user.CNPJ);
+                if (existingCNPJ != null)
+                {
+                    return true;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while analizying if the CNPJ already exists in database");
+
+            }
+
+            return false;
+        }
     }
 }

@@ -70,13 +70,13 @@ namespace gbtwowheels.Controllers
 
         [AllowAnonymous]
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddUser([FromForm] User user)
+        public async Task<IActionResult> AddUser([FromForm] User user, [FromForm] IFormFile imageFile)
         {
          
             var response = new ServiceResponse<User>();
             try
             {
-                response = await _userService.AddUser(user);
+                response = await _userService.AddUser(user, imageFile);
 
                 if (!response.Success)
                 {

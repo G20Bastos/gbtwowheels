@@ -7,7 +7,7 @@ namespace gbtwowheels.Interfaces
     {
         IEnumerable<User> GetAllUsers();
         User GetUserById(int id);
-        Task<ServiceResponse<User>> AddUser(User user);
+        Task<ServiceResponse<User>> AddUser(User user, IFormFile imageFile);
         void UpdateUser(User user);
         void DeleteUser(int id);
         Task<ServiceResponse<User>> Login(User request);

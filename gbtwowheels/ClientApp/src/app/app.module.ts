@@ -17,7 +17,8 @@ import { MainAdminComponent } from './main/main-admin.component';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { MotorcyclesService } from './services/motorcycles.service';
 import { OrdersService } from './services/orders.service';
-
+import { UsersService } from './services/users.service';
+import { User } from 'oidc-client';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { OrdersService } from './services/orders.service';
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     MotorcyclesService,
-    OrdersService
+    OrdersService,
+    UsersService
   ],
   bootstrap: [AppComponent]
 })
