@@ -6,6 +6,7 @@ import { StatusOrder } from '../model/status-order.model';
 import { OrdersService } from '../services/orders.service';
 import { MotorcyclesService } from '../services/motorcycles.service';
 import { MotorcycleFilter } from '../filters/motorcycle.filter';
+import { OrderFilter } from '../filters/order.filter';
 
 @Component({
   selector: 'app-main-admin',
@@ -29,7 +30,7 @@ export class MainAdminComponent implements OnInit {
   isMotoCreateModalOpen = false;
   isOrderCreateModalOpen = false;
   filterMoto: MotorcycleFilter = { year: 0, color: '', engineCapacity: 0, licensePlate: '', model: '', isAvailable: true };
-  filterOrder: any = {};
+  filterOrder: OrderFilter = { startDate: new Date(), endDate: new Date(), addressOrder: '', orderServiceValue: 0, statusOrderId: 1 };
 
   constructor(
     private motorcyclesService: MotorcyclesService,
@@ -250,15 +251,25 @@ export class MainAdminComponent implements OnInit {
   }
 
   applyOrderFilters() {
-    this.filteredOrders = this.orders.filter(order => {
-      return (!this.filterOrder.statusOrderId || order.statusOrderId === this.filterOrder.statusOrderId) &&
-        (!this.filterOrder.addressOrder || order.addressOrder.includes(this.filterOrder.addressOrder)) &&
-        (!this.filterOrder.orderCreationDate || new Date(order.orderCreationDate).toISOString().substring(0, 10) === this.filterOrder.orderCreationDate);
+    const filters: OrderFilter = {
+      startDate: this.filterOrder.startDate,
+      endDate: this.filterOrder.endDate,
+      addressOrder: this.filterOrder.addressOrder,
+      orderServiceValue: this.filterOrder.orderServiceValue,
+      statusOrderId: this.filterOrder.statusOrderId
+    };
+    this.ordersService.getOrdersByFilter(filters).subscribe({
+      next: (orders) => {
+        this.filteredOrders = orders;
+      },
+      error: (error) => {
+        this.toastr.error('Resultados não encontrados para o filtro informado.');
+      }
     });
   }
 
   resetOrderFilters() {
-    this.filterOrder = {};
+    this.filterOrder = { startDate: new Date(), endDate: new Date(), addressOrder: '', orderServiceValue: 0, statusOrderId: 1 };
     this.applyOrderFilters();
   }
 }

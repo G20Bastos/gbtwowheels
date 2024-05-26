@@ -1,5 +1,6 @@
 ﻿using System;
 using gbtwowheels.Controllers;
+using gbtwowheels.Filters;
 using gbtwowheels.Interfaces;
 using gbtwowheels.Models;
 using gbtwowheels.Repositories;
@@ -59,6 +60,22 @@ namespace gbtwowheels.Services
         public IEnumerable<Order> GetAllOrders()
         {
             return _orderRepository.GetAll();
+        }
+
+        public IEnumerable<Order> GetByFilterAsync(OrderFilters filter)
+        {
+            try
+            {
+                return _orderRepository.GetByFilter(filter);
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex, "Error to find order by filters in service");
+                return Enumerable.Empty<Order>();
+
+            }
         }
 
         public Order GetOrderById(int id)

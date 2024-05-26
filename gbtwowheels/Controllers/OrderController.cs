@@ -1,7 +1,9 @@
 ﻿using System;
+using gbtwowheels.Filters;
 using gbtwowheels.Helpers;
 using gbtwowheels.Interfaces;
 using gbtwowheels.Models;
+using gbtwowheels.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace gbtwowheels.Controllers
@@ -151,7 +153,30 @@ namespace gbtwowheels.Controllers
             return NoContent();
         }
 
-      
+        // GET: api/Order/getByFilter
+        [HttpPost("getByFilter")]
+        public ActionResult<IEnumerable<Order>> GetByFilter([FromBody] OrderFilters filters)
+        {
+
+
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+            try
+            {
+
+                return _orderService.GetByFilterAsync(filters).ToList();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the AddMotorcycle request.");
+                return StatusCode(500, "Não foram encontrados resultados com os filtros passados");
+            }
+        }
+
+
     }
 }
 

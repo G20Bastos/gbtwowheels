@@ -85,9 +85,14 @@
         <input class="form-control" type="number" id="filterOrderServiceValue" [(ngModel)]="filterOrder.orderServiceValue">
     </div>
     <div class="form-group">
-        <label for="filterOrderCreationDate">Data:</label>
-        <input class="form-control" type="date" id="filterOrderCreationDate" [(ngModel)]="filterOrder.orderCreationDate">
+        <label for="startDate">Data Inicial</label>
+        <input type="date" id="startDate" class="form-control" [(ngModel)]="filterOrder.startDate" name="startDate">
     </div>
+    <div class="form-group">
+        <label for="endDate">Data Final</label>
+        <input type="date" id="endDate" class="form-control" [(ngModel)]="filterOrder.endDate" name="endDate">
+    </div>
+
     <div class="form-group">
         <label for="filterStatusOrderId">Situação:</label>
         <select class="form-control" id="filterStatusOrderId" [(ngModel)]="filterOrder.statusOrderId">

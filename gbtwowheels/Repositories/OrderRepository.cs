@@ -9,6 +9,8 @@ using BCrypt.Net;
 using gbtwowheels.Interfaces;
 using Azure;
 using gbtwowheels.Controllers;
+using gbtwowheels.Filters;
+using static NuGet.Packaging.PackagingConstants;
 
 namespace gbtwowheels.Repositories
 {
@@ -59,6 +61,54 @@ namespace gbtwowheels.Repositories
         public IEnumerable<Order> GetAll()
         {
             return _context.Orders.ToList();
+        }
+
+        public IEnumerable<Order> GetByFilter(OrderFilters filters)
+        {
+            IQueryable<Order> query = _context.Orders;
+
+
+            if (filters.StartDate.HasValue)
+            {
+                filters.StartDate = filters.StartDate.Value.Date.AddMinutes(1);
+            }
+
+            if (filters.EndDate.HasValue)
+            {
+                filters.EndDate = filters.EndDate.Value.Date.AddHours(23).AddMinutes(59);
+            }
+
+            if (filters.StartDate.HasValue && filters.EndDate.HasValue)
+            {
+                query = query.Where(m => m.OrderCreationDate >= filters.StartDate.Value && m.OrderCreationDate <= filters.EndDate.Value);
+            }
+            else if (filters.StartDate.HasValue)
+            {
+                query = query.Where(m => m.OrderCreationDate >= filters.StartDate.Value);
+            }
+            else if (filters.EndDate.HasValue)
+            {
+                query = query.Where(m => m.OrderCreationDate <= filters.EndDate.Value);
+            }
+
+
+            if (!string.IsNullOrEmpty(filters.AddressOrder))
+            {
+                query = query.Where(m => m.AddressOrder!.Contains(filters.AddressOrder));
+            }
+
+            if (filters.OrderServiceValue.HasValue && filters.OrderServiceValue != 0)
+            {
+                query = query.Where(m => m.OrderServiceValue == filters.OrderServiceValue.Value);
+            }
+
+            if (filters.StatusOrderId.HasValue && filters.StatusOrderId != 0)
+            {
+                query = query.Where(m => m.StatusOrderId == filters.StatusOrderId);
+            }
+
+
+            return query.ToList();
         }
 
         public Order GetById(int id)

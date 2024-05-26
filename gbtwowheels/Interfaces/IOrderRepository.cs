@@ -1,4 +1,5 @@
 ﻿using System;
+using gbtwowheels.Filters;
 using gbtwowheels.Models;
 
 namespace gbtwowheels.Interfaces
@@ -10,6 +11,7 @@ namespace gbtwowheels.Interfaces
         Task<ServiceResponse<Order>> Add(Order order);
         void Update(Order order);
         void Delete(int id);
+        IEnumerable<Order> GetByFilter(OrderFilters filters);
     }
 }
 

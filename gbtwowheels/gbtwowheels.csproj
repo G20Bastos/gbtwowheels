@@ -44,13 +44,13 @@
     <None Remove="ClientApp\src\app\register\" />
     <None Remove="Interfaces\" />
     <None Remove="ClientApp\src\app\access\" />
-    <None Remove="logs\" />
     <None Remove="Utils\" />
     <None Remove="ClientApp\src\app\main\" />
     <None Remove="ClientApp\src\app\model\" />
     <None Remove="ClientApp\src\app\services\" />
     <None Remove="Filters\" />
     <None Remove="ClientApp\src\app\filters\" />
+    <None Remove="Logs\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,13 +62,13 @@
     <Folder Include="ClientApp\src\app\register\" />
     <Folder Include="Interfaces\" />
     <Folder Include="ClientApp\src\app\access\" />
-    <Folder Include="logs\" />
     <Folder Include="Utils\" />
     <Folder Include="ClientApp\src\app\main\" />
     <Folder Include="ClientApp\src\app\model\" />
     <Folder Include="ClientApp\src\app\services\" />
     <Folder Include="Filters\" />
     <Folder Include="ClientApp\src\app\filters\" />
+    <Folder Include="Logs\" />
   </ItemGroup>
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
