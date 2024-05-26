@@ -9,6 +9,7 @@ using BCrypt.Net;
 using gbtwowheels.Interfaces;
 using Azure;
 using gbtwowheels.Controllers;
+using gbtwowheels.Filters;
 
 namespace gbtwowheels.Repositories
 {
@@ -61,7 +62,44 @@ namespace gbtwowheels.Repositories
             return _context.Motorcycles.ToList();
         }
 
-        public Motorcycle GetById(int id)
+        public IEnumerable<Motorcycle> GetByFilter(MotorcycleFilters filters)
+        {
+            IQueryable<Motorcycle> query = _context.Motorcycles;
+
+            if (filters.Year.HasValue && filters.Year != 0)
+            {
+                query = query.Where(m => m.Year == filters.Year);
+            }
+
+            if (!string.IsNullOrEmpty(filters.Model))
+            {
+                query = query.Where(m => m.Model!.Contains(filters.Model));
+            }
+
+            if (!string.IsNullOrEmpty(filters.LicensePlate))
+            {
+                query = query.Where(m => m.LicensePlate!.Contains(filters.LicensePlate));
+            }
+
+            if (!string.IsNullOrEmpty(filters.Color))
+            {
+                query = query.Where(m => m.Color!.Contains(filters.Color));
+            }
+
+            if (filters.EngineCapacity.HasValue && filters.EngineCapacity != 0)
+            {
+                query = query.Where(m => m.EngineCapacity == filters.EngineCapacity);
+            }
+
+            
+           query = query.Where(m => m.IsAvailable == filters.isAvailable);
+            
+
+            return query.ToList();
+        }
+    
+
+    public Motorcycle GetById(int id)
         {
             return _context.Motorcycles.Find(id);
         }
@@ -87,10 +125,29 @@ namespace gbtwowheels.Repositories
             return false;
         }
 
-        public void Update(Motorcycle motorcycle)
+        public async Task<ServiceResponse<Motorcycle>> Update(Motorcycle motorcycle)
         {
-            _context.Motorcycles.Update(motorcycle);
-            _context.SaveChanges();
+
+            var response = new ServiceResponse<Motorcycle>();
+
+            try
+            {
+                _context.Motorcycles.Update(motorcycle);
+                await _context.SaveChangesAsync();
+
+                response.Success = true;
+                response.Data = motorcycle;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while update motorcycle in database");
+
+            }
+
+            return response;
+
+          
         }
 
        

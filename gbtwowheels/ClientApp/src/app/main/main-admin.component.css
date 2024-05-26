@@ -17,9 +17,13 @@ label {
   border-radius: 4px;
 }
 
+.uppercase {
+  text-transform: uppercase;
+}
+
 .btn {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #01af31;
   border: none;
   border-radius: 4px;
   color: #fff;
@@ -47,8 +51,17 @@ label {
     background-color: #f4f4f4;
   }
 
+.button-group .btn {
+  margin-right: 10px; 
+}
+
+  .button-group .btn:last-child {
+    margin-right: 0; 
+  }
+
+
 .modal {
-  display: block; /* Show the modal */
+  display: block; 
   position: fixed;
   z-index: 1;
   left: 0;

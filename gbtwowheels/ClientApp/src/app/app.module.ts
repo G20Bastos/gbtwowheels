@@ -15,6 +15,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { MainAdminComponent } from './main/main-admin.component';
 import { AuthInterceptor } from './services/auth.interceptor';
+import { MotorcyclesService } from './services/motorcycles.service';
+import { OrdersService } from './services/orders.service';
 
 
 @NgModule({
@@ -33,7 +35,11 @@ import { AuthInterceptor } from './services/auth.interceptor';
     HttpClientModule,
     FormsModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      positionClass: 'toast-bottom-right',
+      timeOut: 3000,
+      preventDuplicates: true,
+    }),
     RouterModule.forRoot([
       { path: '', redirectTo: '/register', pathMatch: 'full' },
       { path: 'register', component: RegisterComponent },
@@ -44,7 +50,9 @@ import { AuthInterceptor } from './services/auth.interceptor';
     ])
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    MotorcyclesService,
+    OrdersService
   ],
   bootstrap: [AppComponent]
 })
