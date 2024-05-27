@@ -26,10 +26,22 @@ namespace gbtwowheels.Repositories
             _logger = logger;
         }
 
+        public IEnumerable<OrderNotification> GetAllOrderNotification()
+        {
+            var query = _context.OrderNotifications
+                       .Include(on => on.User)
+                       .ToList();
+
+            return query;
+        }
+
         public IEnumerable<OrderNotification> GetAllOrderNotificationByUser(int userId)
         {
-            IQueryable<OrderNotification> query = _context.OrderNotifications;
-            query = query.Where(o => o.UserId == userId);
+            var query = from orderNotification in _context.OrderNotifications
+                        join order in _context.Orders on orderNotification.OrderId equals order.OrderId
+                        where orderNotification.UserId == userId && order.OrderFinishDate == null
+                        select orderNotification;
+
             return query.ToList();
         }
     }

@@ -226,6 +226,29 @@ namespace gbtwowheels.Controllers
         }
 
 
+
+        // GET: api/order/getAllOrderLinkedByUser/1
+        [HttpGet("[action]/{userId}")]
+        public ActionResult<IEnumerable<Order>> GetAllOrderLinkedByUser(int userId)
+        {
+
+
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+            try
+            {
+
+                return _orderService.GetAllOrderLinkedByUser(userId).ToList();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, "Não foram encontrados resultados com o id passado");
+            }
+        }
     }
 }
 

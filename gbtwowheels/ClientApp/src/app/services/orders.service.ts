@@ -55,4 +55,10 @@ export class OrdersService {
     const headers = this.createHeaders();
     return this.http.put<void>(`${this.apiUrl}/finishOrder/${id}/${userId}`, { headers });
   }
+
+  getAllOrderLinkedByUser(userId: number): Observable<Order[]> {
+    const headers = this.createHeaders();
+    return this.http.get<Order[]>(`${this.apiUrl}/getAllOrderLinkedByUser/${userId}`, { headers });
+  }
+
 }

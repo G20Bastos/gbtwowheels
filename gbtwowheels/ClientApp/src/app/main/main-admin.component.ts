@@ -7,6 +7,8 @@ import { OrdersService } from '../services/orders.service';
 import { MotorcyclesService } from '../services/motorcycles.service';
 import { MotorcycleFilter } from '../filters/motorcycle.filter';
 import { OrderFilter } from '../filters/order.filter';
+import { OrderNotificationsService } from '../services/order-notifications.service';
+import { OrderNotification } from '../model/order-notification.model';
 
 @Component({
   selector: 'app-main-admin',
@@ -31,11 +33,13 @@ export class MainAdminComponent implements OnInit {
   isOrderCreateModalOpen = false;
   filterMoto: MotorcycleFilter = { year: 0, color: '', engineCapacity: 0, licensePlate: '', model: '', isAvailable: true };
   filterOrder: OrderFilter = { startDate: new Date(), endDate: new Date(), addressOrder: '', orderServiceValue: 0, statusOrderId: 1 };
+  orderNotifications: OrderNotification[] = [];
 
   constructor(
     private motorcyclesService: MotorcyclesService,
     private ordersService: OrdersService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private orderNotificationsService: OrderNotificationsService
   ) { }
 
   ngOnInit() {
@@ -99,6 +103,19 @@ export class MainAdminComponent implements OnInit {
     this.ordersService.getAllOrders().subscribe(orders => {
       this.orders = orders;
       this.applyOrderFilters();
+    });
+  }
+
+  searchNotifications() {
+
+    this.orderNotificationsService.getAllOrderNotification().subscribe({
+      next: (orderNotificationss) => {
+        this.orderNotifications = orderNotificationss!;
+      },
+      error: (error) => {
+        console.log(error);
+        this.toastr.error('Sem notificações a serem exibidas no momento');
+      }
     });
   }
 
@@ -166,11 +183,23 @@ export class MainAdminComponent implements OnInit {
 
   confirmDeleteMoto(motorcycleId: number) {
     if (confirm('Tem certeza que deseja excluir esta moto?')) {
-      this.motorcyclesService.deleteMotorcycle(motorcycleId).subscribe(() => {
-        this.loadMotorcycles();
-        this.toastr.success('Moto excluída com sucesso!');
-      }, error => {
-        this.toastr.error('Erro ao excluir moto.');
+      this.motorcyclesService.deleteMotorcycle(motorcycleId).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.loadMotorcycles();
+            this.toastr.success(response.message);
+          } else {
+            this.toastr.error(response.message);
+          }
+        },
+        error: (error) => {
+          if (error.error && error.error.message) {
+            this.toastr.error(error.error.message);
+          } else {
+            this.toastr.error('Ocorreu um erro ao excluir a moto.');
+          }
+          console.error(error);
+        }
       });
     }
   }

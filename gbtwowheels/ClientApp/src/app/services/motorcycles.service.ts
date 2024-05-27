@@ -36,8 +36,8 @@ export class MotorcyclesService {
     return this.http.put<{ success: boolean, message: string, data: Motorcycle }>(`${this.apiUrl}/${moto.motorcycleId}`, moto);
   }
 
-  deleteMotorcycle(motorcycleId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${motorcycleId}`);
+  deleteMotorcycle(motorcycleId: number): Observable<{ success: boolean, message: string, data: Motorcycle }>  {
+    return this.http.delete<{ success: boolean, message: string, data: Motorcycle }>(`${this.apiUrl}/${motorcycleId}`);
   }
 
   getMotorcyclesByFilter(filters: MotorcycleFilter): Observable<Motorcycle[]> {

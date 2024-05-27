@@ -26,6 +26,11 @@ export class OrderNotificationsService {
     return this.http.get<OrderNotification[]>(`${this.apiUrl}/${orderNotificationId}`, { headers });
   }
 
+  getAllOrderNotification(): Observable<OrderNotification[]> {
+    const headers = this.createHeaders();
+    return this.http.get<OrderNotification[]>(`${this.apiUrl}/getAllOrderNotification`, { headers });
+  }
+
  
 
 }

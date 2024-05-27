@@ -66,6 +66,30 @@ namespace gbtwowheels.Controllers
         }
 
 
+        // GET: api/OrderNotification/GetAllOrderNotification
+        [HttpGet("[action]")]
+        public ActionResult<IEnumerable<OrderNotification>> GetAllOrderNotification()
+        {
+
+
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+            try
+            {
+
+                return _orderNotificationService.GetAllOrderNotification().ToList();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, "Não foram encontrados resultados");
+            }
+        }
+
+
     }
 }
 

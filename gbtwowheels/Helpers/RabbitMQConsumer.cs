@@ -43,7 +43,7 @@ namespace gbtwowheels.Helpers
                     var orderId = int.Parse(message.Split(' ')[1]);
 
                     var usersAvailable = context.Rents
-                        .Where(u => u.EndRentDate >= DateTime.Now && !context.Orders.Any(o => o.UserDeliveryId == u.UserId && o.StatusOrderId == 1))
+                        .Where(u => u.EndRentDate >= DateTime.Now && !context.Orders.Any(o => o.UserDeliveryId == u.UserId && o.StatusOrderId == 1 && o.OrderFinishDate == null))
                         .ToList();
 
                     foreach (var userDelivery in usersAvailable)

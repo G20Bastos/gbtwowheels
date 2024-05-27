@@ -21,6 +21,12 @@ namespace gbtwowheels.Services
             _logger = logger;
         }
 
+        public IEnumerable<OrderNotification> GetAllOrderNotification()
+        {
+            var orderNotificationList = _orderNotificationRepository.GetAllOrderNotification();
+            return orderNotificationList;
+        }
+
         public IEnumerable<OrderNotification> GetAllOrderNotificationByUser(int userId)
         {
             return _orderNotificationRepository.GetAllOrderNotificationByUser(userId);

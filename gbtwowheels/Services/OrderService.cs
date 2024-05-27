@@ -64,6 +64,11 @@ namespace gbtwowheels.Services
             _orderRepository.Delete(id);
         }
 
+        public IEnumerable<Order> GetAllOrderLinkedByUser(int userId)
+        {
+            return _orderRepository.GetAllOrderLinkedByUser(userId);
+        }
+
         public IEnumerable<Order> GetAllOrders()
         {
             return _orderRepository.GetAll();
@@ -73,7 +78,8 @@ namespace gbtwowheels.Services
         {
             try
             {
-                return _orderRepository.GetByFilter(filter);
+                var orders = _orderRepository.GetByFilter(filter);
+                return orders;
 
             }
             catch (Exception ex)

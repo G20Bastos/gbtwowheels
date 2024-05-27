@@ -128,7 +128,7 @@ namespace gbtwowheels.Controllers
                     return BadRequest();
                 }
 
-               response = await _motorcycleService.UpdateMotorcycle(motorcycle);
+                response = await _motorcycleService.UpdateMotorcycle(motorcycle);
 
                 if (!response.Success)
                 {
@@ -143,12 +143,12 @@ namespace gbtwowheels.Controllers
                 return StatusCode(500, response.Message);
             }
 
-            
+
         }
 
         // DELETE: api/Motorcycle/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteMotorcycle(int id)
+        public async Task<IActionResult> DeleteMotorcycle(int id)
         {
 
             if (!ValidateToken(out _))
@@ -156,17 +156,37 @@ namespace gbtwowheels.Controllers
                 return Unauthorized("Invalid token");
             }
 
-
-            var motorcycle = _motorcycleService.GetMotorcycleById(id);
-
-            if (motorcycle == null)
+            var response = new ServiceResponse<Motorcycle>();
+            try
             {
-                return NotFound();
+
+                var motorcycle = _motorcycleService.GetMotorcycleById(id);
+
+                if (motorcycle == null)
+                {
+                    return NotFound();
+                }
+
+
+                response = await _motorcycleService.DeleteMotorcycle(id);
+
+                if (!response.Success)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
             }
 
-            _motorcycleService.DeleteMotorcycle(id);
+            catch (Exception ex)
+            {
 
-            return NoContent();
+                _logger.LogError(ex, "An error occurred while processing the AddMotorcycle request.");
+                return StatusCode(500, response.Message);
+
+
+
+            }
         }
 
         // GET: api/Motorcycle/getByFilter
@@ -195,7 +215,7 @@ namespace gbtwowheels.Controllers
 
         // GET: api/Motorcycle/getMotorcycleAvailable
         [HttpGet("getMotorcycleAvailable")]
-        public  ActionResult<Motorcycle> GetMotorcycleAvailable()
+        public ActionResult<Motorcycle> GetMotorcycleAvailable()
         {
 
 
@@ -212,7 +232,7 @@ namespace gbtwowheels.Controllers
                     return Unauthorized("Invalid token");
                 }
 
-                var motorcycle =  _motorcycleService.GetMotorcycleAvailable();
+                var motorcycle = _motorcycleService.GetMotorcycleAvailable();
 
                 if (motorcycle == null)
                 {

@@ -35,13 +35,13 @@ namespace gbtwowheels.Services
                 }
                 else
                 {
-                    
+
                     var result = await _motorcycleRepository.Add(motorcycle);
                     response.Success = true;
                     response.Message = "Moto cadastrada com sucesso!";
                     response.Data = result.Data;
 
-                    
+
                 }
 
 
@@ -60,10 +60,48 @@ namespace gbtwowheels.Services
             return response;
         }
 
-        public void DeleteMotorcycle(int id)
+        public async Task<ServiceResponse<Motorcycle>> DeleteMotorcycle(int id)
         {
-            _motorcycleRepository.Delete(id);
+            var response = new ServiceResponse<Motorcycle>();
+
+            try
+            {
+
+                if (await _motorcycleRepository.IsMotorcycleLinkedSomeRent(id))
+                {
+                    response.Success = false;
+                    response.Message = "Moto com registro de locação - exclusão não realizada.";
+
+                }
+                else
+                {
+
+                    _motorcycleRepository.Delete(id);
+                    response.Success = true;
+                    response.Message = "Moto excluída com sucesso!";
+                    response.Data = null;
+
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex, "Error to delete moto in service");
+
+
+                response.Success = false;
+                response.Message = "Ocorreu um erro ao deletar a moto na plataforma.";
+
+            }
+
+            return response;
+
+            
         }
+
 
         public IEnumerable<Motorcycle> GetAllMotorcycles()
         {

@@ -8,6 +8,7 @@ namespace gbtwowheels.Interfaces
     {
         
         IEnumerable<OrderNotification> GetAllOrderNotificationByUser(int userId);
+        IEnumerable<OrderNotification> GetAllOrderNotification();
     }
 }
 
