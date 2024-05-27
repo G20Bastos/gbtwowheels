@@ -45,4 +45,14 @@ export class OrdersService {
     const headers = this.createHeaders();
     return this.http.post<Order[]>(`${this.apiUrl}/getByFilter`, filters, { headers });
   }
+
+  acceptOrder(id: number, userId: number): Observable<void> {
+    const headers = this.createHeaders();
+    return this.http.put<void>(`${this.apiUrl}/acceptOrder/${id}/${userId}`, { headers });
+  }
+
+  finishOrder(id: number, userId: number): Observable<void> {
+    const headers = this.createHeaders();
+    return this.http.put<void>(`${this.apiUrl}/finishOrder/${id}/${userId}`, { headers });
+  }
 }

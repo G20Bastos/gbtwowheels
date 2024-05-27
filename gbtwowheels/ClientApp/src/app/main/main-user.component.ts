@@ -2,11 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { formatDate } from '@angular/common';
 import { RentalPlan } from '../model/rental-plan.model';
+import { OrderNotification } from '../model/order-notification.model';
 import { RentalPlansService } from '../services/rental-plans.service';
 import { Rent } from '../model/rent.model';
 import { RentsService } from '../services/rents.service';
 import { ToastrService } from 'ngx-toastr';
 import { MotorcyclesService } from '../services/motorcycles.service';
+import { OrderNotificationsService } from '../services/order-notifications.service';
+import { OrdersService } from '../services/orders.service';
 import { format } from 'date-fns';
 import { differenceInDays } from 'date-fns';
 
@@ -37,9 +40,12 @@ export class MainUserComponent implements OnInit {
   totalCost: number = 0;
   rent: Rent = this.createEmptyRent();
   motorcycleAvailableId: number = 0;
+  orderNotifications: OrderNotification[] = [];
+  selectedOrderNotification: OrderNotification | null = null;
 
 
-  constructor(private rentalPlansService: RentalPlansService, private rentsService: RentsService, private toastr: ToastrService, private motorcyclesService: MotorcyclesService) { }
+  constructor(private rentalPlansService: RentalPlansService, private rentsService: RentsService, private toastr: ToastrService, private motorcyclesService: MotorcyclesService, private orderNotificationsService: OrderNotificationsService,
+    private ordersService: OrdersService) { }
 
   ngOnInit() {
     const today = new Date();
@@ -64,6 +70,40 @@ export class MainUserComponent implements OnInit {
         console.error('Erro ao carregar planos de aluguel:', error);
       }
     );
+  }
+
+  acceptOrder(notification: OrderNotification) {
+    this.selectedOrderNotification = { ...notification };
+
+    this.ordersService.acceptOrder(this.selectedOrderNotification.orderId, parseInt(localStorage.getItem('userId')!, 10)).subscribe(() => {
+      
+      this.toastr.success('Pedido aceito com sucesso!');
+    }, error => {
+      this.toastr.error('Erro ao aceitar o pedido.');
+    });
+  }
+
+  finishOrder(notification: OrderNotification) {
+    this.selectedOrderNotification = { ...notification };
+
+    this.ordersService.finishOrder(this.selectedOrderNotification.orderId, parseInt(localStorage.getItem('userId')!, 10)).subscribe(() => {
+      
+      this.toastr.success('Pedido finalizado com sucesso!');
+    }, error => {
+      this.toastr.error('Erro ao finalizar o pedido.');
+    });
+  }
+
+  searchNotifications() {
+
+    this.orderNotificationsService.getAllOrderNotificationByUser(parseInt(localStorage.getItem('userId')!, 10)).subscribe({
+      next: (orderNotificationss) => {
+        this.orderNotifications = orderNotificationss!;
+      },
+      error: (error) => {
+        this.toastr.error('Sem pedidos disponíveis no momento');
+      }
+    });
   }
 
 createEmptyRent(): Rent {

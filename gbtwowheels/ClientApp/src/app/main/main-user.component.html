@@ -1,54 +1,90 @@
-<h2>Locação de Motos</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locação de Motos</title>
+</head>
+<body>
+    <h2>Locação de Motos</h2>
 
-<div class="form-container">
-    <div class="form-group">
-        <label for="filterYear">Selecione um plano de aluguel:</label>
-        <select class="form-control" id="filterYear" (change)="onPlanSelected($event)">
-            <option *ngFor="let plan of rentalPlans" [value]="plan.rentalPlanId">
-                <ng-container *ngIf="plan.rentalPlanId !== 0">
-                    {{ plan.numberRentalDays }} dias com um custo de R$ {{ plan.valuePerRentalDay }} por dia
-                </ng-container>
-            </option>
-        </select>
-    </div>
-</div>
-
-
-
-
-<div class="date-fields">
-    <div class="form-group">
-        <label for="startDate">Data Início:</label>
-        <input type="date" id="startDate" class="form-control" [ngModel]="startDate | date:'yyyy-MM-dd'" (ngModelChange)="startDate = $event" [disabled]="isDisabled">
-    </div>
-
-    <div class="form-group">
-        <label for="possibleEndDate">Data Prevista Término:</label>
-        <input type="date" id="possibleEndDate" class="form-control" [ngModel]="possibleEndDate | date:'yyyy-MM-dd'" (ngModelChange)="possibleEndDate = $event" [disabled]="isDisabled">
+    <div class="form-container">
+        <div class="form-group">
+            <label for="filterYear">Selecione um plano de aluguel:</label>
+            <select class="form-control" id="filterYear" (change)="onPlanSelected($event)">
+                <option *ngFor="let plan of rentalPlans" [value]="plan.rentalPlanId">
+                    <ng-container *ngIf="plan.rentalPlanId !== 0">
+                        {{ plan.numberRentalDays }} dias com um custo de R$ {{ plan.valuePerRentalDay }} por dia
+                    </ng-container>
+                </option>
+            </select>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="endDate">Data de Término:</label>
-        <input type="date" id="endDate" class="form-control" [ngModel]="endDate | date:'yyyy-MM-dd'" (ngModelChange)="onEndDateChange($event)">
+    <div class="date-fields">
+        <div class="form-group">
+            <label for="startDate">Data Início:</label>
+            <input type="date" id="startDate" class="form-control" [ngModel]="startDate | date:'yyyy-MM-dd'" (ngModelChange)="startDate = $event" [disabled]="isDisabled">
+        </div>
+
+        <div class="form-group">
+            <label for="possibleEndDate">Data Prevista Término:</label>
+            <input type="date" id="possibleEndDate" class="form-control" [ngModel]="possibleEndDate | date:'yyyy-MM-dd'" (ngModelChange)="possibleEndDate = $event" [disabled]="isDisabled">
+        </div>
+
+        <div class="form-group">
+            <label for="endDate">Data de Término:</label>
+            <input type="date" id="endDate" class="form-control" [ngModel]="endDate | date:'yyyy-MM-dd'" (ngModelChange)="onEndDateChange($event)">
+        </div>
     </div>
-</div>
 
+    <div class="resumo-locacao">
+        <h3>Resumo da Locação</h3>
+        <p>Data Inicial: {{ startDate | date: 'dd/MM/yyyy' }}</p>
+        <p>Data Prevista: {{ possibleEndDate | date: 'dd/MM/yyyy' }}</p>
+        <p>Data Devolução: {{ endDate | date: 'dd/MM/yyyy' }}</p>
+    </div>
 
-<div class="resumo-locacao">
-    <h3>Resumo da Locação</h3>
-    <p>Data Inicial: {{ startDate | date: 'dd/MM/yyyy' }}</p>
-    <p>Data Prevista: {{ possibleEndDate | date: 'dd/MM/yyyy' }}</p>
-    <p>Data Devolução: {{ endDate | date: 'dd/MM/yyyy' }}</p>
-</div>
+    <div class="custo">
+        <h3>Subtotal</h3>
+        <p>Custo total de diárias: R$ {{ costAllDays | number: '1.2' }}</p>
+        <p>Custo por diária não efetivada: R$ {{ costByDayNotUsed | number: '1.2' }}</p>
+        <p>Custo por diária adicional: R$ {{ costByAditionalDay | number: '1.2' }}</p>
+    </div>
 
-<div class="custo">
-    <h3>Subtotal</h3>
-    <p>Custo total de diárias: R$ {{ costAllDays | number: '1.2' }}</p>
-    <p>Custo por diária não efetivada: R$ {{ costByDayNotUsed | number: '1.2' }}</p>
-    <p>Custo por diária adicional: R$ {{ costByAditionalDay | number: '1.2' }}</p>
-</div>
+    <div class="total">
+        <h3>Total</h3>
+        <p>Total: R$ {{ totalCost | number: '1.2' }}</p>
+        <button class="btn btn-primary" (click)="addRent()">Confirmar Locação</button>
+    </div>
 
-<div class="total">
-    <p>Total: R$ {{ totalCost | number: '1.2' }}</p>
-    <button class="btn btn-primary" (click)="addRent()">Confirmar Locação</button>
-</div>
+    <h2>Pedidos disponíveis</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Número do Pedido</th>
+                <th>Mensagem</th>
+                <th>Data</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let notification of orderNotifications">
+                <td>{{ notification.orderId }}</td>
+                <td>{{ notification.message }}</td>
+                <td>{{ notification.createdAt }}</td>
+                <td>
+                    <button (click)="acceptOrder(notification)">Aceitar Pedido</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="button-group">
+        <button class="btn btn-primary" (click)="searchNotifications()">
+            <i class="fas fa-search"></i> Pesquisar
+        </button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
