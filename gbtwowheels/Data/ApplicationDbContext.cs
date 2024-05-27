@@ -22,6 +22,7 @@ namespace gbtwowheels.Data
         public DbSet<RentalPlan> RentalPlans { get; set; }
         public DbSet<StatusOrder> StatusOrders { get; set; }
         public DbSet<User> Users{ get; set; }
+        public DbSet<OrderNotification> OrderNotifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

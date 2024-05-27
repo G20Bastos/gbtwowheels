@@ -1,4 +1,5 @@
 ﻿using gbtwowheels.Data;
+using gbtwowheels.Helpers;
 using gbtwowheels.Interfaces;
 using gbtwowheels.Repositories;
 using gbtwowheels.Services;
@@ -65,5 +66,6 @@ public class Startup
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
         });
+
     }
 }

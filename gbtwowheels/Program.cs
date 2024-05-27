@@ -4,6 +4,7 @@ using gbtwowheels.Repositories;
 using gbtwowheels.Services;
 using Microsoft.EntityFrameworkCore;
 using gbtwowheels.Controllers;
+using gbtwowheels.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,20 +14,32 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+    });
+
 builder.Services.AddControllersWithViews();
 
 //Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMotorcycleService, MotorcycleService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderNotificationService, OrderNotificationService>();
 builder.Services.AddScoped<IRentalPlanService, RentalPlanService>();
 builder.Services.AddScoped<IRentService, RentService>();
+builder.Services.AddScoped<RabbitMQService>();
+builder.Services.AddScoped<RabbitMQConsumer>();
+
 
 
 //Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMotorcycleRepository, MotorcycleRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderNotificationRepository, OrderNotificationRepository>();
 builder.Services.AddScoped<IRentalPlanRepository, RentalPlanRepository>();
 builder.Services.AddScoped<IRentRepository, RentRepository>();
 
@@ -47,6 +60,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var rabbitMQConsumer = scope.ServiceProvider.GetRequiredService<RabbitMQConsumer>();
+    rabbitMQConsumer.Start();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

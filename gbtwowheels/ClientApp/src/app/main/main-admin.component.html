@@ -1,4 +1,4 @@
-<h2>Cadastro de Motos</h2>
+<h2>Listagem de Motos</h2>
 
 
 <div class="form-container">
@@ -30,20 +30,9 @@
             <option *ngFor="let statusMoto of statusAvailabeMotoList" [ngValue]="statusMoto.key">{{ statusMoto.value }}</option>
         </select>
     </div>
-    <div class="button-group">
-        <button class="btn btn-primary" (click)="openMotoCreateModal()">
-            <i class="fas fa-plus"></i> Nova Moto
-        </button>
-        <button class="btn btn-primary" (click)="applyMotoFilters()">
-            <i class="fas fa-search"></i> Pesquisar
-        </button>
-        <button class="btn btn-secondary" (click)="resetMotoFilters()">
-            <i class="fas fa-eraser"></i> Limpar Filtros
-        </button>
-    </div>
+
 </div>
 
-<h2>Lista de Motos</h2>
 <table class="table">
     <thead>
         <tr>
@@ -72,7 +61,23 @@
     </tbody>
 </table>
 
-<h2>Cadastro de Pedidos</h2>
+<div class="button-group">
+    <button class="btn btn-primary" (click)="openMotoCreateModal()">
+        <i class="fas fa-plus"></i> Nova Moto
+    </button>
+    <button class="btn btn-primary" (click)="applyMotoFilters()">
+        <i class="fas fa-search"></i> Pesquisar
+    </button>
+    <button class="btn btn-secondary" (click)="resetMotoFilters()">
+        <i class="fas fa-eraser"></i> Limpar Filtros
+    </button>
+</div>
+
+<br />
+<br />
+<br />
+
+<h2>Listagem de Pedidos</h2>
 
 
 <div class="form-container">
@@ -99,20 +104,9 @@
             <option *ngFor="let status of statusList" [value]="status.key">{{ status.value }}</option>
         </select>
     </div>
-    <div class="button-group">
-        <button class="btn btn-primary" (click)="openOrderCreateModal()">
-            <i class="fas fa-plus"></i> Novo Pedido
-        </button>
-        <button class="btn btn-primary" (click)="applyOrderFilters()">
-            <i class="fas fa-search"></i> Pesquisar
-        </button>
-        <button class="btn btn-secondary" (click)="resetOrderFilters()">
-            <i class="fas fa-eraser"></i> Limpar Filtros
-        </button>
-    </div>
+
 </div>
 
-<h2>Lista de Pedidos</h2>
 <table class="table">
     <thead>
         <tr>
@@ -136,6 +130,50 @@
         </tr>
     </tbody>
 </table>
+
+<div class="button-group">
+    <button class="btn btn-primary" (click)="openOrderCreateModal()">
+        <i class="fas fa-plus"></i> Novo Pedido
+    </button>
+    <button class="btn btn-primary" (click)="applyOrderFilters()">
+        <i class="fas fa-search"></i> Pesquisar
+    </button>
+    <button class="btn btn-secondary" (click)="resetOrderFilters()">
+        <i class="fas fa-eraser"></i> Limpar Filtros
+    </button>
+</div>
+
+<br />
+<br />
+<br />
+
+<div>
+    <h2>Entregadores Notificados</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Número do Pedido</th>
+                <th>Nome do Entregador</th>
+                <th>Mensagem</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let notification of orderNotifications">
+                <td>{{ notification.orderId }}</td>
+                <td>{{ notification.user!.firstName }}</td>
+                <td>{{ notification.message }}</td>
+                <td>{{ notification.createdAt | date:'dd/MM/yyyy' }}</td>
+
+            </tr>
+        </tbody>
+    </table>
+    <div class="button-group">
+        <button class="btn btn-primary" (click)="searchNotifications()">
+            <i class="fas fa-search"></i> Pesquisar
+        </button>
+    </div>
+</div>
 
 <div class="modal" tabindex="-1" role="dialog" *ngIf="isMotoCreateModalOpen">
     <div class="modal-dialog" role="document">

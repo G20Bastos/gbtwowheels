@@ -130,6 +130,55 @@ namespace gbtwowheels.Controllers
             return NoContent();
         }
 
+        // PUT: api/order/AcceptOrder/5/25
+        [HttpPut("[action]/{id}/{userId}")]
+        public IActionResult AcceptOrder(int id, int userId)
+        {
+
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+
+            var order = _orderService.GetOrderById(id);
+            order.UserDeliveryId = userId;
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+
+            _orderService.UpdateOrder(order);
+
+            return NoContent();
+        }
+
+        // PUT: api/order/FinishOrder/5/25
+        [HttpPut("[action]/{id}/{userId}")]
+        public IActionResult FinishOrder(int id, int userId)
+        {
+
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+
+            var order = _orderService.GetOrderById(id);
+            order.UserDeliveryId = userId;
+            order.OrderFinishDate = new DateTime();
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+
+            _orderService.UpdateOrder(order);
+
+            return NoContent();
+        }
+
         // DELETE: api/Order/5
         [HttpDelete("{id}")]
         public IActionResult DeleteOrder(int id)
@@ -177,6 +226,29 @@ namespace gbtwowheels.Controllers
         }
 
 
+
+        // GET: api/order/getAllOrderLinkedByUser/1
+        [HttpGet("[action]/{userId}")]
+        public ActionResult<IEnumerable<Order>> GetAllOrderLinkedByUser(int userId)
+        {
+
+
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+            try
+            {
+
+                return _orderService.GetAllOrderLinkedByUser(userId).ToList();
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the request.");
+                return StatusCode(500, "Não foram encontrados resultados com o id passado");
+            }
+        }
     }
 }
 

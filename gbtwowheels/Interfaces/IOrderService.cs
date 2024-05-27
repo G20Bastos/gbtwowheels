@@ -12,6 +12,7 @@ namespace gbtwowheels.Interfaces
         void UpdateOrder(Order order);
         void DeleteOrder(int id);
         IEnumerable<Order> GetByFilterAsync(OrderFilters filter);
+        IEnumerable<Order> GetAllOrderLinkedByUser(int userId);
 
     }
 }

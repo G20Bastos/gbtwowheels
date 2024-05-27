@@ -63,25 +63,27 @@ namespace gbtwowheels.Repositories
             return _context.Orders.ToList();
         }
 
+        public IEnumerable<Order> GetAllOrderLinkedByUser(int userId)
+        {
+            IQueryable<Order> query = _context.Orders;
+            query = query.Where(o => o.UserDeliveryId == userId && o.OrderFinishDate == null);
+            return query.ToList();
+        }
+
         public IEnumerable<Order> GetByFilter(OrderFilters filters)
         {
             IQueryable<Order> query = _context.Orders;
 
 
-            if (filters.StartDate.HasValue)
-            {
-                filters.StartDate = filters.StartDate.Value.Date.AddMinutes(1);
-            }
-
-            if (filters.EndDate.HasValue)
-            {
-                filters.EndDate = filters.EndDate.Value.Date.AddHours(23).AddMinutes(59);
-            }
 
             if (filters.StartDate.HasValue && filters.EndDate.HasValue)
             {
-                query = query.Where(m => m.OrderCreationDate >= filters.StartDate.Value && m.OrderCreationDate <= filters.EndDate.Value);
+                var startDate = filters.StartDate.Value.Date;
+                var endDate = filters.EndDate.Value.Date.AddDays(1).AddSeconds(-1);
+
+                query = query.Where(m => m.OrderCreationDate.Date >= startDate && m.OrderCreationDate.Date <= endDate);
             }
+
             else if (filters.StartDate.HasValue)
             {
                 query = query.Where(m => m.OrderCreationDate >= filters.StartDate.Value);

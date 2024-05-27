@@ -2,13 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { formatDate } from '@angular/common';
 import { RentalPlan } from '../model/rental-plan.model';
+import { OrderNotification } from '../model/order-notification.model';
 import { RentalPlansService } from '../services/rental-plans.service';
 import { Rent } from '../model/rent.model';
 import { RentsService } from '../services/rents.service';
 import { ToastrService } from 'ngx-toastr';
 import { MotorcyclesService } from '../services/motorcycles.service';
+import { OrderNotificationsService } from '../services/order-notifications.service';
+import { OrdersService } from '../services/orders.service';
 import { format } from 'date-fns';
 import { differenceInDays } from 'date-fns';
+import { Order } from '../model/order.model';
 
 
 
@@ -37,11 +41,19 @@ export class MainUserComponent implements OnInit {
   totalCost: number = 0;
   rent: Rent = this.createEmptyRent();
   motorcycleAvailableId: number = 0;
+  orderNotifications: OrderNotification[] = [];
+  selectedOrderNotification: OrderNotification | null = null;
+  ordersLinkeds: Order[] = [];
+  selectedOrderLinked: Order | null = null;
+  
 
 
-  constructor(private rentalPlansService: RentalPlansService, private rentsService: RentsService, private toastr: ToastrService, private motorcyclesService: MotorcyclesService) { }
+  constructor(private rentalPlansService: RentalPlansService, private rentsService: RentsService, private toastr: ToastrService, private motorcyclesService: MotorcyclesService, private orderNotificationsService: OrderNotificationsService,
+    private ordersService: OrdersService) { }
 
   ngOnInit() {
+    this.searchNotifications();
+    this.searchOrdersLinked();
     const today = new Date();
     this.startDate = new Date(today.setDate(today.getDate() + 1));
     this.loadRentalPlans();
@@ -64,6 +76,56 @@ export class MainUserComponent implements OnInit {
         console.error('Erro ao carregar planos de aluguel:', error);
       }
     );
+  }
+
+  acceptOrder(notification: OrderNotification) {
+    this.selectedOrderNotification = { ...notification };
+
+    this.ordersService.acceptOrder(this.selectedOrderNotification.orderId, parseInt(localStorage.getItem('userId')!, 10)).subscribe(() => {
+      
+      this.toastr.success('Pedido aceito com sucesso!');
+      this.searchNotifications();
+      this.searchOrdersLinked();
+    }, error => {
+      this.toastr.error('Erro ao aceitar o pedido.');
+    });
+  }
+
+  finishOrder(order: Order) {
+    this.selectedOrderLinked = { ...order };
+
+    this.ordersService.finishOrder(this.selectedOrderLinked!.orderId!, parseInt(localStorage.getItem('userId')!, 10)).subscribe(() => {
+      
+      this.toastr.success('Pedido finalizado com sucesso!');
+      this.searchNotifications();
+      this.searchOrdersLinked();
+    }, error => {
+      this.toastr.error('Erro ao finalizar o pedido.');
+    });
+  }
+
+  searchNotifications() {
+
+    this.orderNotificationsService.getAllOrderNotificationByUser(parseInt(localStorage.getItem('userId')!, 10)).subscribe({
+      next: (orderNotificationss) => {
+        this.orderNotifications = orderNotificationss!;
+      },
+      error: (error) => {
+        this.toastr.error('Sem pedidos disponíveis no momento');
+      }
+    });
+  }
+
+  searchOrdersLinked() {
+
+    this.ordersService.getAllOrderLinkedByUser(parseInt(localStorage.getItem('userId')!, 10)).subscribe({
+      next: (orderLinkeds) => {
+        this.ordersLinkeds = orderLinkeds!;
+      },
+      error: (error) => {
+        this.toastr.error('Sem pedidos vinculados ao usuário');
+      }
+    });
   }
 
 createEmptyRent(): Rent {
@@ -138,50 +200,59 @@ createEmptyRent(): Rent {
 
 
   addRent() {
-    if (this.selectedRentalPlan.rentalPlanId !== 0) {
 
-      this.getMotorcycleAvailable();
+    let category = localStorage.getItem('categoryLicense');
+    if (category != 'B') {
 
-      if (this.motorcycleAvailableId !== 0) {
+      if (this.selectedRentalPlan.rentalPlanId !== 0) {
 
+        this.getMotorcycleAvailable();
 
-        this.rent.userId = parseInt(localStorage.getItem('userId')!, 10);
-        this.rent.motorcycleId = this.motorcycleAvailableId;
-        this.rent.rentalPlanId = this.selectedRentalPlan.rentalPlanId;
-        this.rent.startRentDate = this.startDate;
-        this.rent.expectedEndRentDate = this.possibleEndDate;
-        this.rent.endRentDate = this.endDate;
-        this.rent.costAllDays = this.costAllDays;
-        this.rent.costByDayNotUsed = this.costByDayNotUsed;
-        this.rent.costByAditionalDay = this.costByAditionalDay;
-        this.rent.totalCost = this.totalCost;
+        if (this.motorcycleAvailableId !== 0) {
 
 
-        this.rentsService.createRent(this.rent).subscribe({
-          next: (response) => {
-            if (response.success) {
-              this.toastr.success(response.message);
-            } else {
-              this.toastr.error(response.message);
+          this.rent.userId = parseInt(localStorage.getItem('userId')!, 10);
+          this.rent.motorcycleId = this.motorcycleAvailableId;
+          this.rent.rentalPlanId = this.selectedRentalPlan.rentalPlanId;
+          this.rent.startRentDate = this.startDate;
+          this.rent.expectedEndRentDate = this.possibleEndDate;
+          this.rent.endRentDate = this.endDate;
+          this.rent.costAllDays = this.costAllDays;
+          this.rent.costByDayNotUsed = this.costByDayNotUsed;
+          this.rent.costByAditionalDay = this.costByAditionalDay;
+          this.rent.totalCost = this.totalCost;
+
+
+          this.rentsService.createRent(this.rent).subscribe({
+            next: (response) => {
+              if (response.success) {
+                this.toastr.success(response.message);
+              } else {
+                this.toastr.error(response.message);
+              }
+            },
+            error: (error) => {
+              if (error.error && error.error.message) {
+                this.toastr.error(error.error.message);
+              } else {
+                this.toastr.error('Ocorreu um erro ao realizar a locação.');
+              }
+              console.error(error);
             }
-          },
-          error: (error) => {
-            if (error.error && error.error.message) {
-              this.toastr.error(error.error.message);
-            } else {
-              this.toastr.error('Ocorreu um erro ao realizar a locação.');
-            }
-            console.error(error);
-          }
-        });
+          });
 
+        }
+
+
+
+      } else {
+        this.toastr.error('Selecione um plano de locação');
       }
-
-
-
     } else {
-      this.toastr.error('Selecione um plano de locação');
+
+      this.toastr.error('Categoria de habilitação inválida.');
     }
+    
   }
 
 

@@ -25,6 +25,8 @@ export class LoginComponent {
         this.toastr.success('Usuário logado com sucesso!', 'Sucesso');
         localStorage.setItem('authToken', response.data.tokenAccess);
         localStorage.setItem('userId', response.data.userId);
+        localStorage.setItem('fullName', response.data.firstName + ' ' + response.data.lastName);
+        localStorage.setItem('categoryLicense', response.data.categoryLicense);
         if (response.data.levelId == 1) {
           this.router.navigate(['/main-admin']);
         } else {

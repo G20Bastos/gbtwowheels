@@ -48,5 +48,8 @@ namespace gbtwowheels.Models
 
         [ForeignKey("StatusOrderId")]
         public StatusOrder? StatusOrder { get; set; }
+
+        [InverseProperty("Order")]
+        public OrderNotification? OrderNotifications { get; set; }
     }
 }

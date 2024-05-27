@@ -14,6 +14,7 @@ namespace gbtwowheels.Interfaces
         Task<bool> IsExistingMotorcycle(Motorcycle motorcycle);
         IEnumerable<Motorcycle> GetByFilter(MotorcycleFilters filter);
         Task<Motorcycle> GetMotorcycleAvailable();
+        Task<bool> IsMotorcycleLinkedSomeRent(int id);
     }
 }
 

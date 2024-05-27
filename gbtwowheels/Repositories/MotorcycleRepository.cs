@@ -142,6 +142,27 @@ namespace gbtwowheels.Repositories
             return false;
         }
 
+        public async Task<bool> IsMotorcycleLinkedSomeRent(int id)
+        {
+            try
+            {
+                var existingLinkedMotorcycle = await _context.Rents.FirstOrDefaultAsync(u => u.MotorcycleId == id);
+                if (existingLinkedMotorcycle != null)
+                {
+                    return true;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while analizying if the motorcycle already exists in database");
+
+            }
+
+            return false;
+        }
+
         public async Task<ServiceResponse<Motorcycle>> Update(Motorcycle motorcycle)
         {
 

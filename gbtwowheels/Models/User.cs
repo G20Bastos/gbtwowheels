@@ -75,6 +75,9 @@ namespace gbtwowheels.Models
         [NotMapped]
         public string? TokenAccess { get; set; }
 
+        [InverseProperty("User")]
+        public ICollection<OrderNotification>? OrderNotifications { get; set; }
+
 
     }
 }

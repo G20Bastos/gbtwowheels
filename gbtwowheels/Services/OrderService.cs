@@ -1,6 +1,7 @@
 ﻿using System;
 using gbtwowheels.Controllers;
 using gbtwowheels.Filters;
+using gbtwowheels.Helpers;
 using gbtwowheels.Interfaces;
 using gbtwowheels.Models;
 using gbtwowheels.Repositories;
@@ -13,11 +14,13 @@ namespace gbtwowheels.Services
 
         private readonly IOrderRepository _orderRepository;
         private readonly ILogger<OrderService> _logger;
+        private readonly RabbitMQService _rabbitMQService;
 
-        public OrderService(IOrderRepository orderRepository, ILogger<OrderService> logger)
+        public OrderService(IOrderRepository orderRepository, ILogger<OrderService> logger, RabbitMQService rabbitMQService)
         {
             _orderRepository = orderRepository;
             _logger = logger;
+            _rabbitMQService = rabbitMQService;
         }
 
         public async Task<ServiceResponse<Order>> Add(Order order)
@@ -28,7 +31,11 @@ namespace gbtwowheels.Services
             {
 
                                    
-                    var result = await _orderRepository.Add(order);
+                var result = await _orderRepository.Add(order);
+                if (result.Data!.StatusOrderId == 1)
+                {
+                    _rabbitMQService.PublishMessage($"Pedido {result.Data!.OrderId} disponível para entrega!");
+                }
                     response.Success = true;
                     response.Message = "Pedido cadastrado com sucesso!";
                     response.Data = result.Data;
@@ -57,6 +64,11 @@ namespace gbtwowheels.Services
             _orderRepository.Delete(id);
         }
 
+        public IEnumerable<Order> GetAllOrderLinkedByUser(int userId)
+        {
+            return _orderRepository.GetAllOrderLinkedByUser(userId);
+        }
+
         public IEnumerable<Order> GetAllOrders()
         {
             return _orderRepository.GetAll();
@@ -66,7 +78,8 @@ namespace gbtwowheels.Services
         {
             try
             {
-                return _orderRepository.GetByFilter(filter);
+                var orders = _orderRepository.GetByFilter(filter);
+                return orders;
 
             }
             catch (Exception ex)
