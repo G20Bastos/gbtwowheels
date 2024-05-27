@@ -142,7 +142,7 @@ createEmptyRent(): Rent {
 
       this.getMotorcycleAvailable();
 
-      
+      if (this.motorcycleAvailableId !== 0) {
 
 
         this.rent.userId = parseInt(localStorage.getItem('userId')!, 10);
@@ -174,9 +174,10 @@ createEmptyRent(): Rent {
             console.error(error);
           }
         });
-     
 
-      
+      }
+
+
 
     } else {
       this.toastr.error('Selecione um plano de locação');
@@ -192,6 +193,7 @@ createEmptyRent(): Rent {
         if (motorcycle) {
           this.motorcycleAvailableId = motorcycle.motorcycleId!;
         } else {
+          this.motorcycleAvailableId = 0;
           this.toastr.error('Infelizmente não temos motos disponíveis no momento, por favor, tente mais tarde');
           return;
         }

@@ -109,6 +109,9 @@ namespace gbtwowheels.Repositories
             var existingMotorcycle = await _context.Motorcycles.FirstOrDefaultAsync(u => u.IsAvailable == true);
             if (existingMotorcycle != null)
             {
+                existingMotorcycle.IsAvailable = false;
+                _context.Motorcycles.Update(existingMotorcycle);
+                await _context.SaveChangesAsync();
                 return existingMotorcycle;
             }
 
