@@ -24,8 +24,13 @@ export class LoginComponent {
       .subscribe(response => {
         this.toastr.success('Usuário logado com sucesso!', 'Sucesso');
         localStorage.setItem('authToken', response.data.tokenAccess);
-        localStorage.setItem('userId', response.data.userId); 
-        this.router.navigate(['/main-admin']);
+        localStorage.setItem('userId', response.data.userId);
+        if (response.data.levelId == 1) {
+          this.router.navigate(['/main-admin']);
+        } else {
+          this.router.navigate(['/main-user']);
+        }
+        
       }, error => {
         this.toastr.error('Erro ao fazer login', 'Erro');
       });

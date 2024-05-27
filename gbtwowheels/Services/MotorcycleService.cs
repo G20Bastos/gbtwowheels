@@ -88,6 +88,11 @@ namespace gbtwowheels.Services
 
         }
 
+        public async Task<Motorcycle> GetMotorcycleAvailable()
+        {
+            return await _motorcycleRepository.GetMotorcycleAvailable();
+        }
+
         public Motorcycle GetMotorcycleById(int id)
         {
             return _motorcycleRepository.GetById(id);

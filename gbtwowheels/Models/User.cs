@@ -60,6 +60,7 @@ namespace gbtwowheels.Models
         [ForeignKey("LevelId")]
         public LevelAccess? LevelAccess { get; set; }
 
+        [InverseProperty("User")]
         public ICollection<Rent>? Rents { get; set; }
 
         [InverseProperty("UserOrderCreation")]

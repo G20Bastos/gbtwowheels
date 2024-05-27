@@ -1,0 +1,25 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.container {
+  padding: 16px;
+}
+
+.date-fields {
+  display: flex;
+  gap: 16px;
+}
+
+.resumo-locacao, .custo, .total {
+  margin-top: 16px;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.long-label .mat-form-field-label {
+  white-space: normal !important;
+}

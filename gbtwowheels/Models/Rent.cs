@@ -12,9 +12,11 @@ namespace gbtwowheels.Models
         public int RentId { get; set; }
 
         [Required]
-        [ForeignKey("User")] 
-        [Column("user_id")] 
+        [Column("user_delivery_id")] 
         public int UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        [InverseProperty("Rents")]
         public User? User { get; set; }
 
         [Required]
@@ -34,6 +36,22 @@ namespace gbtwowheels.Models
 
         [Column("expected_end_rent_date")] 
         public DateTime? ExpectedEndRentDate { get; set; }
+
+        [Column("end_rent_date")]
+        public DateTime? EndRentDate { get; set; }
+
+        [Column("cost_all_days")]
+        public decimal CostAllDays { get; set; }
+
+        [Column("cost_by_day_not_used")]
+        public decimal CostByDayNotUsed { get; set; }
+
+        [Column("cost_by_aditional_day")]
+        public decimal CostByAditionalDay { get; set; }
+
+        [Column("total_cost")]
+        public decimal TotalCost { get; set; }
+        
     }
 }
 

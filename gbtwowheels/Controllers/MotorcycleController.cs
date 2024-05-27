@@ -192,6 +192,43 @@ namespace gbtwowheels.Controllers
                 return StatusCode(500, "Não foram encontrados resultados com os filtros passados");
             }
         }
+
+        // GET: api/Motorcycle/getMotorcycleAvailable
+        [HttpGet("getMotorcycleAvailable")]
+        public  ActionResult<Motorcycle> GetMotorcycleAvailable()
+        {
+
+
+            if (!ValidateToken(out _))
+            {
+                return Unauthorized("Invalid token");
+            }
+
+            try
+            {
+
+                if (!ValidateToken(out _))
+                {
+                    return Unauthorized("Invalid token");
+                }
+
+                var motorcycle =  _motorcycleService.GetMotorcycleAvailable();
+
+                if (motorcycle == null)
+                {
+                    return NotFound();
+                }
+
+                return motorcycle.Result;
+
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing the AddMotorcycle request.");
+                return StatusCode(500, "Não foram encontrados resultados com os filtros passados");
+            }
+        }
     }
 }
 

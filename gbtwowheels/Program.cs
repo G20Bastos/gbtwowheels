@@ -19,12 +19,16 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMotorcycleService, MotorcycleService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IRentalPlanService, RentalPlanService>();
+builder.Services.AddScoped<IRentService, RentService>();
 
 
 //Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMotorcycleRepository, MotorcycleRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IRentalPlanRepository, RentalPlanRepository>();
+builder.Services.AddScoped<IRentRepository, RentRepository>();
 
 
 builder.Services.AddCors(options =>

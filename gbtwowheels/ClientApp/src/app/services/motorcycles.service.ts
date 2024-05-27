@@ -45,5 +45,10 @@ export class MotorcyclesService {
     return this.http.post<Motorcycle[]>(`${this.apiUrl}/getByFilter`, filters, { headers });
   }
 
+  getMotorcycleAvailable(): Observable<Motorcycle> {
+    const headers = this.createHeaders();
+    return this.http.get<Motorcycle>(`${this.apiUrl}/getMotorcycleAvailable`, { headers });
+  }
+
 
 }

@@ -99,10 +99,24 @@ namespace gbtwowheels.Repositories
         }
     
 
-    public Motorcycle GetById(int id)
+        public Motorcycle GetById(int id)
         {
             return _context.Motorcycles.Find(id);
         }
+
+        public async Task<Motorcycle> GetMotorcycleAvailable()
+        {
+            var existingMotorcycle = await _context.Motorcycles.FirstOrDefaultAsync(u => u.IsAvailable == true);
+            if (existingMotorcycle != null)
+            {
+                return existingMotorcycle;
+            }
+
+            return null!;
+            
+
+        }
+        
 
         public async Task<bool> IsExistingMotorcycle(Motorcycle motorcycle)
         {

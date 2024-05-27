@@ -12,6 +12,7 @@ namespace gbtwowheels.Interfaces
         Task<ServiceResponse<Motorcycle>> UpdateMotorcycle(Motorcycle motorcycle);
         void DeleteMotorcycle(int id);
         IEnumerable<Motorcycle> GetByFilterAsync(MotorcycleFilters filter);
+        Task<Motorcycle> GetMotorcycleAvailable();
 
     }
 }

@@ -14,11 +14,21 @@ import { LoginComponent } from './access/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { MainAdminComponent } from './main/main-admin.component';
+import { MainUserComponent } from './main/main-user.component';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { MotorcyclesService } from './services/motorcycles.service';
 import { OrdersService } from './services/orders.service';
 import { UsersService } from './services/users.service';
+import { RentalPlansService } from './services/rental-plans.service';
+import { RentsService } from './services/rents.service';
 import { User } from 'oidc-client';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -29,13 +39,21 @@ import { User } from 'oidc-client';
     FetchDataComponent,
     RegisterComponent,
     LoginComponent,
-    MainAdminComponent
+    MainAdminComponent,
+    MainUserComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
     BrowserAnimationsModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatInputModule,
+    MatNativeDateModule,
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right',
       timeOut: 3000,
@@ -47,14 +65,17 @@ import { User } from 'oidc-client';
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'login', component: LoginComponent },
-      { path: 'main-admin', component: MainAdminComponent }
+      { path: 'main-admin', component: MainAdminComponent },
+      { path: 'main-user', component: MainUserComponent }
     ])
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     MotorcyclesService,
     OrdersService,
-    UsersService
+    UsersService,
+    RentalPlansService,
+    RentsService
   ],
   bootstrap: [AppComponent]
 })

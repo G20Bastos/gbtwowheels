@@ -13,6 +13,7 @@ namespace gbtwowheels.Interfaces
         void Delete(int id);
         Task<bool> IsExistingMotorcycle(Motorcycle motorcycle);
         IEnumerable<Motorcycle> GetByFilter(MotorcycleFilters filter);
+        Task<Motorcycle> GetMotorcycleAvailable();
     }
 }
 
