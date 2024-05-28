@@ -7,7 +7,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   providedIn: 'root'
 })
 export class OrderNotificationsService {
-  private apiUrl = 'https://localhost:7296/api/orderNotification';
+  private apiUrl = 'https://localhost/api/orderNotification';
 
   constructor(private http: HttpClient) { }
 

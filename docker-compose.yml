@@ -1,0 +1,54 @@
+version: '3.4'
+
+services:
+  gbtwowheels:
+    image: ${DOCKER_REGISTRY-}gbtwowheels
+    build:
+      context: .
+      dockerfile: gbtwowheels/Dockerfile
+    depends_on:
+      - database
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=1234567890
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/certificate.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=G20Bastos
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/mycert.pfx
+    ports:
+      - "7296:80"
+      - "443:443"
+    expose:
+      - "80"
+      - "443"
+    volumes:
+      - ./https:/https
+
+  frontend:
+    build:
+      context: ./gbtwowheels/ClientApp
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+
+  database:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: marcha_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"

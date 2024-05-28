@@ -20,7 +20,7 @@ export class LoginComponent {
       userPassword: this.userPassword
     };
 
-    this.http.post<any>('https://localhost:7296/api/user/login', user)
+    this.http.post<any>('https://localhost/api/user/login', user)
       .subscribe(response => {
         this.toastr.success('Usuário logado com sucesso!', 'Sucesso');
         localStorage.setItem('authToken', response.data.tokenAccess);

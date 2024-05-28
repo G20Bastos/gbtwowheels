@@ -5,6 +5,8 @@ VisualStudioVersion = 25.0.1706.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gbtwowheels", "gbtwowheels\gbtwowheels.csproj", "{23E06442-E15D-491D-B889-27414DB7D847}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{74FD16EF-FB2B-45B7-899C-98623B60FA30}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{23E06442-E15D-491D-B889-27414DB7D847}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23E06442-E15D-491D-B889-27414DB7D847}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23E06442-E15D-491D-B889-27414DB7D847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74FD16EF-FB2B-45B7-899C-98623B60FA30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74FD16EF-FB2B-45B7-899C-98623B60FA30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74FD16EF-FB2B-45B7-899C-98623B60FA30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74FD16EF-FB2B-45B7-899C-98623B60FA30}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

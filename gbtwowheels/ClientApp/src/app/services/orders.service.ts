@@ -8,7 +8,7 @@ import { OrderFilter } from '../filters/order.filter';
   providedIn: 'root'
 })
 export class OrdersService {
-  private apiUrl = 'https://localhost:7296/api/order';
+  private apiUrl = 'https://localhost/api/order';
 
   constructor(private http: HttpClient) { }
 

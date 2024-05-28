@@ -8,7 +8,7 @@ import { MotorcycleFilter } from '../filters/motorcycle.filter';
   providedIn: 'root'
 })
 export class MotorcyclesService {
-  private apiUrl = 'https://localhost:7296/api/motorcycle';
+  private apiUrl = 'https://localhost/api/motorcycle';
 
   constructor(private http: HttpClient) { }
 

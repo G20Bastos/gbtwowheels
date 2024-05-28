@@ -44,6 +44,8 @@ builder.Services.AddScoped<IRentalPlanRepository, RentalPlanRepository>();
 builder.Services.AddScoped<IRentRepository, RentRepository>();
 
 
+builder.Services.AddHostedService<RabbitMQConsumerHostedService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
@@ -62,11 +64,11 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 
-using (var scope = app.Services.CreateScope())
-{
-    var rabbitMQConsumer = scope.ServiceProvider.GetRequiredService<RabbitMQConsumer>();
-    rabbitMQConsumer.Start();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var rabbitMQConsumer = scope.ServiceProvider.GetRequiredService<RabbitMQConsumer>();
+//    rabbitMQConsumer.Start();
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
