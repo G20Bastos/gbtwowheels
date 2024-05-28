@@ -4,12 +4,32 @@ namespace gbtwowheels.Helpers
 {
     public class RabbitMQService
     {
+
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly IConnection _connection;
         private readonly IModel _channel;
 
-        public RabbitMQService()
+        private readonly string _rabbitMqHost;
+        private readonly string _rabbitMqUser;
+        private readonly string _rabbitMqPass;
+        private readonly int _rabbitMqPort;
+
+        public RabbitMQService(IServiceScopeFactory scopeFactory)
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+
+            _scopeFactory = scopeFactory;
+            _rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "rabbitmq";
+            _rabbitMqUser = Environment.GetEnvironmentVariable("RABBITMQ_USER") ?? "guest";
+            _rabbitMqPass = Environment.GetEnvironmentVariable("RABBITMQ_PASS") ?? "guest";
+            _rabbitMqPort = int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT") ?? "5672");
+
+            var factory = new ConnectionFactory()
+            {
+                HostName = _rabbitMqHost,
+                UserName = _rabbitMqUser,
+                Password = _rabbitMqPass,
+                Port = _rabbitMqPort
+            };
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             _channel.QueueDeclare(queue: "OrderNotifications",

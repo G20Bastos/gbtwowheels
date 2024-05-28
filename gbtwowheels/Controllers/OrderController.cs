@@ -142,6 +142,7 @@ namespace gbtwowheels.Controllers
 
             var order = _orderService.GetOrderById(id);
             order.UserDeliveryId = userId;
+            order.StatusOrderId = 2;
 
             if (order == null)
             {
@@ -166,6 +167,7 @@ namespace gbtwowheels.Controllers
 
             var order = _orderService.GetOrderById(id);
             order.UserDeliveryId = userId;
+            order.StatusOrderId = 3;
             order.OrderFinishDate = new DateTime();
 
             if (order == null)
